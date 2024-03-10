@@ -11,9 +11,9 @@ point point::moveAstep(int direction) {
     case LEFT:
         return point(x, y + 1 );
     case UP:
-        return point(x + 1, y);
-    case DOWN:
         return point(x - 1, y);
+    case DOWN:
+        return point(x + 1, y);
     default:
         return point(x, y);
     }
@@ -26,9 +26,9 @@ point point::moveSteps(int direction, int len) {
     case LEFT:
         return point(x, y - len);
     case UP:
-        return point(x + len, y);
-    case DOWN:
         return point(x - len, y);
+    case DOWN:
+        return point(x + len, y);
     default:
         return point(x, y);
     }
