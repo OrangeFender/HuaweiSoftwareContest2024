@@ -1,6 +1,8 @@
 #ifndef DEFS_H
 #define DEFS_H
 
+#define INF 1000000000
+
 #define NUM_ROBOTS 10
 #define NUM_BOATS 10
 #define NUM_DOCKS 5
