@@ -66,6 +66,8 @@ mapinfo::mapinfo(char map[MAP_SIZE_X][MAP_SIZE_Y]){
     for(int k = 0; k < NUM_DOCKS; k++){
         dfs(dockpoint[k], k, 0);
     }
+}
 
-
+int mapinfo::getDistance(point p, int dockIndex){
+    return p.getMapValue(distances[dockIndex]);
 }
