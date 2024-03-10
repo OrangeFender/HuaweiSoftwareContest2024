@@ -2,6 +2,9 @@
 using namespace std;
 #include <vector>
 #include <random>
+#include <fstream>
+#include <string>
+
 struct Square
 {
     int rdx, rdy;
@@ -12,6 +15,36 @@ struct Square
 
 class Solution {
 public:
+    vector<vector<char>> readMatrixFromFile(const string& filename) {
+        vector<vector<char>> matrix;
+
+        ifstream file(filename);
+        if (!file.is_open()) {
+            cout << "Failed to open the file: " << filename << endl;
+            return matrix;
+        }
+
+        string line;
+        while (getline(file, line)) {
+            vector<char> row;
+            for (char symbol : line) {
+                if (symbol == '.' || symbol == 'A') {
+                    row.push_back('1');
+                }
+                else {
+                    row.push_back('0');
+                }
+            }
+            matrix.push_back(row);
+        }
+
+        file.close();
+        return matrix;
+    }
+
+
+
+
     vector<vector<char>> create()
     {
         vector<vector<char>> matrix(200, vector<char>(200, '0'));
@@ -115,8 +148,8 @@ public:
         {
             Square square = solution.maximalSquare(matrix);
             SquareArray.push_back(square);
-            solution.print(matrix);
-            cout << endl;
+            //solution.print(matrix);
+            //cout << endl;
             solution.replaceOnes(matrix, square.rdx - square.length + 1, square.rdx, square.rdy - square.length + 1, square.rdy);
         }
         return SquareArray;
@@ -124,31 +157,41 @@ public:
 
 };
 
-int main() {
-    // 创建一个二维矩阵作为输入数据
-    vector<vector<char>> matrix = {
-        {'1', '0', '1', '0', '0'},
-        {'1', '0', '1', '1', '1'},
-        {'1', '1', '1', '1', '1'},
-        {'1', '0', '0', '1', '0'}
-    };
 
-    //// 创建 Solution 类的实例
+
+
+int main() {
+    //// 创建一个二维矩阵作为输入数据
+    //vector<vector<char>> matrix = {
+    //    {'1', '0', '1', '0', '0'},
+    //    {'1', '0', '1', '1', '1'},
+    //    {'1', '1', '1', '1', '1'},
+    //    {'1', '0', '0', '1', '0'}
+    //};
+
+
     //Solution solution;
 
-    //vector<Square> SquareArray;
+    //vector<Square> SquareArray = solution.Partition(matrix);
 
-    //while (solution.isMatrixAllZeros(matrix) != 1)
-    //{
-    //    Square square = solution.maximalSquare(matrix);
-    //    SquareArray.push_back(square);
-    //    solution.print(matrix);
+    //for (const auto& element : SquareArray) {
+    //    cout << element.rdx << " " << element.rdy << " " << element.length;
     //    cout << endl;
-    //    solution.replaceOnes(matrix, square.rdx - square.length + 1, square.rdx, square.rdy - square.length + 1, square.rdy);
     //}
 
 
+    //// 输出矩阵的部分内容
+    //for (int i = 0; i < 200; ++i) {
+    //    for (int j = 0; j < 200; ++j) {
+    //        cout << matrix[i][j] << " ";
+    //    }
+    //    cout << endl;
+    //}
+
     Solution solution;
+
+    string filename = "map2.txt";
+    vector<vector<char>> matrix = solution.readMatrixFromFile(filename);
 
     vector<Square> SquareArray = solution.Partition(matrix);
 
@@ -156,8 +199,6 @@ int main() {
         cout << element.rdx << " " << element.rdy << " " << element.length;
         cout << endl;
     }
-    
-
 
     return 0;
 }
