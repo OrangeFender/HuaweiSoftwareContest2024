@@ -1,10 +1,10 @@
 #include"defs.h"
-#include"common.h"
-#include<cmath>
+#include"common.hpp"
 
-point::point(int x, int y) : x(x), y(y) {}
 
-point point::moveAstep(int direction) {
+point::point(int x = -1 , int y = -1) : x(x), y(y) {}
+
+point point::moveOneStep(int direction) {
     switch (direction) {
     case RIGHT:
         return point(x, y + 1);
@@ -34,10 +34,24 @@ point point::moveSteps(int direction, int len) {
     }
 }
 
-int point::getDistance(point other) {
+int point::getDistance(const point& other) {
     return abs(x - other.x) + abs(y - other.y);
 }
 
-bool point::horizontal_or_vertical(point other) {
+bool point::isHorizontalOrVertical(const point& other) {
     return x == other.x || y == other.y;
+}
+
+bool point::valid() {
+    return x >= 0 && x < MAP_SIZE_X && y >= 0 && y < MAP_SIZE_Y;
+}
+
+template <typename T>
+T point::getMapValue(T map[MAP_SIZE_X][MAP_SIZE_Y]) {
+    return map[x][y];
+}
+
+template <typename T>
+void point::setMapValue(T map[MAP_SIZE_X][MAP_SIZE_Y], T value) {
+    map[x][y] = value;
 }
