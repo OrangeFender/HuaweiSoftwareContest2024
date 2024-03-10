@@ -8,6 +8,6 @@ class mapinfo{
     int distances[NUM_DOCKS][MAP_SIZE_X][MAP_SIZE_Y];
     void dfs(point p, int dockIndex, int distance );
     public:
-    mapinfo(char map[MAP_SIZE_X][MAP_SIZE_Y]);//初始化码头位置
-    int getDist2Dock(point A, int dock);
+    mapinfo(char map[MAP_SIZE_X][MAP_SIZE_Y]);//初始化码头位置和每个点的距离
+    int getDistance(point p, int dockIndex);
 };
