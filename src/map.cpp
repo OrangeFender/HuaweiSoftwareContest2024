@@ -1,5 +1,4 @@
 #include "map.hpp"
-#include "defs.h"
 #include "common.hpp"
 #include<vector>
 
