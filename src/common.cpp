@@ -1,10 +1,37 @@
-#include"defs.h"
 #include"common.hpp"
+
+Direction rotateLeft(Direction direction) {
+    switch (direction) {
+        case RIGHT:
+            return UP;
+        case LEFT:
+            return DOWN;
+        case UP:
+            return LEFT;
+        case DOWN:
+            return RIGHT;
+    }
+    return direction;
+}
+
+Direction rotateRight(Direction direction) {
+    switch (direction) {
+        case RIGHT:
+            return DOWN;
+        case LEFT:
+            return UP;
+        case UP:
+            return RIGHT;
+        case DOWN:
+            return LEFT;
+    }
+    return direction;
+}
 
 
 point::point(int x = -1 , int y = -1) : x(x), y(y) {}
 
-point point::moveOneStep(int direction) {
+point point::moveOneStep(Direction direction) {
     switch (direction) {
     case RIGHT:
         return point(x, y + 1);
@@ -19,7 +46,7 @@ point point::moveOneStep(int direction) {
     }
 }
 
-point point::moveSteps(int direction, int len) {
+point point::moveSteps(Direction direction, int len) {
     switch (direction) {
     case RIGHT:
         return point(x, y + len);
