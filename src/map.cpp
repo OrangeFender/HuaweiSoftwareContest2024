@@ -39,6 +39,7 @@ void mapinfo::bfs(int dockIndex){
         }
     }
 }
+
 mapinfo::mapinfo(char map[MAP_SIZE_X][MAP_SIZE_Y]){
     int count = 0;
     bool flag = false;
@@ -80,9 +81,9 @@ mapinfo::mapinfo(char map[MAP_SIZE_X][MAP_SIZE_Y]){
         }
     }
 
-    // Perform DFS traversal to calculate shortest distances
+    // Perform BFS traversal to calculate shortest distances
     for(int k = 0; k < NUM_DOCKS; k++){
-        dfs(dockpoint[k], k, 0);
+        bfs(k);
     }
 }
 
