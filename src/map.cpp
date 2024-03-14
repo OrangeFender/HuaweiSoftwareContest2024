@@ -1,5 +1,5 @@
 #include "map.hpp"
-#include "common.hpp"
+
 #include<vector>
 
 void mapinfo::dfs(point p, int dockIndex, int distance ) {
