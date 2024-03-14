@@ -20,6 +20,25 @@ void mapinfo::dfs(point p, int dockIndex, int distance ) {
     dfs(p.moveOneStep(RIGHT), dockIndex, distance + 1);
 }
 
+//从码头到每个点的最短距离
+void mapinfo::bfs(int dockIndex){
+    std::vector<point> queue;
+    queue.push_back(dockpoint[dockIndex]);
+    dockpoint[dockIndex].setMapValue(distances[dockIndex], 0);
+    while(!queue.empty()){
+        point p = queue[0];
+        queue.erase(queue.begin());
+        Direction directions[] = {UP, DOWN, LEFT, RIGHT};
+        for (int i = 0; i < 4; i++) {
+            Direction dir = directions[i];
+            point nextPoint = p.moveOneStep(dir);
+            if(nextPoint.valid() && nextPoint.getMapValue(clearing) && nextPoint.getMapValue(distances[dockIndex]) == INF){
+                nextPoint.setMapValue(distances[dockIndex], p.getMapValue(distances[dockIndex]) + 1);
+                queue.push_back(nextPoint);
+            }
+        }
+    }
+}
 mapinfo::mapinfo(char map[MAP_SIZE_X][MAP_SIZE_Y]){
     int count = 0;
     bool flag = false;
