@@ -1,11 +1,19 @@
 #include"common.hpp"
 #include"defs.h"
-class robots{
-    point positions[NUM_ROBOTS];
-    
+
+struct robots{
+    point position;
+
 };
 
-class boats{
-    point positions[NUM_BOATS];
-    point docks[NUM_DOCKS];
+struct boats{
+    int setoffTime;
+    int capacity;
+    int whichDock;
+    point docks;
+};
+
+struct box{
+    point position;
+    int closestDock;
 };
