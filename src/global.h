@@ -1,4 +1,4 @@
-#include "defs.h"
+#include "common.hpp"
 
 #ifndef GLOBALS_H
 #define GLOBALS_H
