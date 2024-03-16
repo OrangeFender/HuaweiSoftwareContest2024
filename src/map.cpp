@@ -1,30 +1,29 @@
 #include "map.hpp"
 
-#include<vector>
 
-void mapinfo::dfs(point p, int dockIndex, int distance ) {
+void mapinfo::dfs(point src, int distance, int distances[MAP_SIZE_X][MAP_SIZE_Y]) {
     // Check if the current position is within the map boundaries
-    if (!p.valid()) {
+    if (!src.valid()) {
         return;
     }
     // Check if the current position is a wall or already visited
-    if (!p.getMapValue(clearing) || distance >= p.getMapValue(distances[dockIndex])) {
+    if (!src.getMapValue(clearing) || distance >= src.getMapValue(distances)) {
         return;
     }
     // if the current distance is smaller than the previously recorded distance
-    p.setMapValue(distances[dockIndex], distance);
+    src.setMapValue(distances, distance);
     // Move to the adjacent positions (up, down, left, right)
-    dfs(p.moveOneStep(UP), dockIndex, distance + 1);
-    dfs(p.moveOneStep(DOWN), dockIndex, distance + 1);
-    dfs(p.moveOneStep(LEFT), dockIndex, distance + 1);
-    dfs(p.moveOneStep(RIGHT), dockIndex, distance + 1);
+    dfs(src.moveOneStep(UP), distance + 1, distances);
+    dfs(src.moveOneStep(DOWN), distance + 1, distances);
+    dfs(src.moveOneStep(LEFT), distance + 1, distances);
+    dfs(src.moveOneStep(RIGHT), distance + 1, distances);
 }
 
 //从码头到每个点的最短距离
-void mapinfo::bfs(int dockIndex){
+void mapinfo::bfs(point src,int distances[MAP_SIZE_X][MAP_SIZE_Y]){
     std::vector<point> queue;
-    queue.push_back(dockpoint[dockIndex]);
-    dockpoint[dockIndex].setMapValue(distances[dockIndex], 0);
+    queue.push_back(src);
+    src.setMapValue(distances, 0);
     while(!queue.empty()){
         point p = queue[0];
         queue.erase(queue.begin());
@@ -32,8 +31,9 @@ void mapinfo::bfs(int dockIndex){
         for (int i = 0; i < 4; i++) {
             Direction dir = directions[i];
             point nextPoint = p.moveOneStep(dir);
-            if(nextPoint.valid() && nextPoint.getMapValue(clearing) && nextPoint.getMapValue(distances[dockIndex]) == INF){
-                nextPoint.setMapValue(distances[dockIndex], p.getMapValue(distances[dockIndex]) + 1);
+            if(nextPoint.valid())break;
+            if(nextPoint.getMapValue(clearing) && nextPoint.getMapValue(distances) == INF){
+                nextPoint.setMapValue(distances, p.getMapValue(distances) + 1);
                 queue.push_back(nextPoint);
             }
         }
@@ -53,7 +53,7 @@ mapinfo::mapinfo(char map[MAP_SIZE_X][MAP_SIZE_Y]){
                 // Record the minimum vertex index
                 int minX = i;
                 int minY = j;
-                dockpoint[count] = point(minX, minY);
+                docks[count].position = point(minX, minY);
                 count++;
             }
             if(count == NUM_DOCKS){
@@ -72,21 +72,4 @@ mapinfo::mapinfo(char map[MAP_SIZE_X][MAP_SIZE_Y]){
                 clearing[i][j] = false;
         }
     }
-    // Initialize distances array
-    for(int i = 0; i < MAP_SIZE_X; i++){
-        for(int j = 0; j < MAP_SIZE_Y; j++){
-            for(int k = 0; k < NUM_DOCKS; k++){
-                distances[i][j][k] = INF; // Set initial distance to infinity
-            }
-        }
-    }
-
-    // Perform BFS traversal to calculate shortest distances
-    for(int k = 0; k < NUM_DOCKS; k++){
-        bfs(k);
-    }
-}
-
-int mapinfo::getDistance(point p, int dockIndex){
-    return p.getMapValue(distances[dockIndex]);
 }
