@@ -1,8 +1,13 @@
 #include"common.hpp"
-
+#define FETCH 0
+#define RETURN 1
+#define BOAT_MOVING 0
+#define BOAT_LOADING 1
+#define BOAT_PENDING 2
 
 struct robots{
     point position;
+    int status;//FETCH or RETURN
 
 };
 
@@ -23,5 +28,6 @@ struct box{
 struct dock{
     point position;
     int distances[MAP_SIZE_X][MAP_SIZE_Y];
+    int status;
     dock();
 };
