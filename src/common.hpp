@@ -10,6 +10,7 @@
 #define MAP_SIZE_X 200
 #define MAP_SIZE_Y 200
 
+#define BOX_LIFE 1000
 
 
 
@@ -17,7 +18,8 @@ enum Direction {
     RIGHT,
     LEFT,
     UP,
-    DOWN
+    DOWN,
+    NONE
 };
 
 Direction rotateLeft(Direction direction);
@@ -36,4 +38,5 @@ struct point {
     T getMapValue(T map[MAP_SIZE_X][MAP_SIZE_Y]);
     template <typename T>
     void setMapValue(T map[MAP_SIZE_X][MAP_SIZE_Y], T value);
+    bool operator==(const point& other);
 };
