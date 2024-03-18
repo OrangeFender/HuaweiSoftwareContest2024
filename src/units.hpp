@@ -1,14 +1,29 @@
 #include"common.hpp"
+//关于机器人的状态
 #define FETCH 0
 #define RETURN 1
+#define PENDING 2
+
 #define BOAT_MOVING 0
 #define BOAT_LOADING 1
 #define BOAT_PENDING 2
 
-struct robots{
-    point position;
-    int status;//FETCH or RETURN
+#include<list>
 
+struct robots{
+    int Dockid;
+    dock* targetDock;
+    point position;
+    int status;//FETCH or RETURN or PENDING
+    box targetBox;
+    int boxBFS[MAP_SIZE_X][MAP_SIZE_Y];//目标箱子的bfs结果
+    Direction next;
+    int nextOP;
+    void findBest(std::list<box>& boxes, int currentTime);
+    void greedyGetNext();
+    bool pull();
+    bool get();
+    void Reset();//以防箱子丢失
 };
 
 struct boat{
@@ -19,9 +34,9 @@ struct boat{
 };
 
 struct box{
+    int value;
     point position;
-    int closestDock;
-    int distances[MAP_SIZE_X][MAP_SIZE_Y];
+    int bornTime;//出现时间，第几帧
     box();
 };
 
