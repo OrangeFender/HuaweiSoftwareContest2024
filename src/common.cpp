@@ -82,3 +82,7 @@ template <typename T>
 void point::setMapValue(T map[MAP_SIZE_X][MAP_SIZE_Y], T value) {
     map[x][y] = value;
 }
+
+bool point::operator==(const point& other) {
+    return x == other.x && y == other.y;
+}
