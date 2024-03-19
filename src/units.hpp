@@ -11,6 +11,7 @@
 #include<list>
 
 struct robots{
+    int id;
     int Dockid;
     dock* targetDock;
     point position;
@@ -24,6 +25,8 @@ struct robots{
     bool pull();
     bool get();
     void Reset();//以防箱子丢失
+    void findCollision(robots& other);
+    void handleCollision(robots& other, int flag);
 };
 
 struct boat{
