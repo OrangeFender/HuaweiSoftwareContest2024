@@ -78,3 +78,68 @@ void robots::greedyGetNext() {
         }
     }
 }
+
+void robots::handleCollision(robots& other, int flag){//other 是被让的
+    Direction trys[5] = {UP, LEFT, DOWN, RIGHT, NONE};
+    int otherdistances[5];
+    if(other.status == FETCH){
+        for(int i = 0; i < 5; i++){
+            otherdistances[i] = other.position.moveOneStep(trys[i]).getMapValue(other.boxBFS);
+        }
+    }
+    else{
+        for(int i = 0; i < 5; i++){
+            otherdistances[i] = other.position.moveOneStep(trys[i]).getMapValue(other.targetDock->distances);
+        }
+    }
+    Direction bestdir;
+    int best = 0;
+    if(flag == 2){
+        for(int i = 0; i < 5; i++){
+            if(trys[i]==next)continue;
+            if(otherdistances[i] > best){
+                best = otherdistances[i];
+                bestdir = trys[i];
+            }
+        }
+    }
+    if(flag == 1){
+        for(int i = 0; i < 5; i++){
+            if(trys[i]==next||trys[i]==NONE)continue;
+            if(otherdistances[i] > best){
+                best = otherdistances[i];
+                bestdir = trys[i];
+            }
+        }
+    }
+    next = bestdir;
+}
+
+void robots::findCollision(robots& other){
+    if(id == other.id){
+        return;
+    }
+    if(position.getDistance(other.position) > 2){
+        return;
+    }
+    if(position.moveOneStep(next) == other.position.moveOneStep(other.next)){
+        if(id < other.id){//id大的让
+            other.handleCollision(*this, 2);
+        }
+        else{
+            handleCollision(other, 2);
+        }
+    }
+    else if(position.moveOneStep(next) == other.position && position == other.position.moveOneStep(other.next)){
+        if(id < other.id){
+            other.handleCollision(*this, 1);
+        }
+        else{
+            handleCollision(other, 1);
+        }
+    }
+}
+
+
+
+
