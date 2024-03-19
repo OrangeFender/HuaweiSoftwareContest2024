@@ -31,7 +31,7 @@ Direction rotateRight(Direction direction) {
 
 point::point(int x = -1 , int y = -1) : x(x), y(y) {}
 
-point point::moveOneStep(Direction direction) {
+point point::moveOneStep(Direction direction) const {
     switch (direction) {
     case RIGHT:
         return point(x, y + 1);
@@ -46,7 +46,7 @@ point point::moveOneStep(Direction direction) {
     }
 }
 
-point point::moveSteps(Direction direction, int len) {
+point point::moveSteps(Direction direction, int len) const {
     switch (direction) {
     case RIGHT:
         return point(x, y + len);
