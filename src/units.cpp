@@ -13,7 +13,16 @@ dock::dock(){
     }
 }
 
-void robots::findBest(std::list<box>& boxes, int currentTime) {
+void robots::initPerFrame(point p){
+    position = p;
+    next = NONE;
+    modified = 0;
+    pull = false;
+    get = false;
+}
+
+
+void robots::findBestBox(std::list<box>& boxes, int currentTime) {
     box bestBox;
     int bestValue = -1;
     auto bestIt = boxes.end();
@@ -39,7 +48,7 @@ void robots::findBest(std::list<box>& boxes, int currentTime) {
     targetBox = bestBox;
 }
 
-bool robots::pull() {
+bool robots::pullBox() {
     if(position.getMapValue((targetDock->distances)) > 6){
         return false;
     }
@@ -47,15 +56,17 @@ bool robots::pull() {
         int dx = targetDock->position.x - position.x;
         int dy = targetDock->position.y - position.y;
         if(dx >= 0 && dx <= 3 && dy >= 0 && dy <= 3){
+            pull = true;
             return true;
         }
     }
     return false;
 }
 
-bool robots::get() {
+bool robots::getBox() {
     if(status==FETCH){
         if(position==targetBox.position){
+            get = true;
             return true;
         }
     }
@@ -80,6 +91,7 @@ void robots::greedyGetNext() {
 }
 
 void robots::handleCollision(robots& other, int flag){//other 是被让的
+    modified +=1;
     Direction trys[5] = {UP, LEFT, DOWN, RIGHT, NONE};
     int otherdistances[5];
     if(other.status == FETCH){
@@ -97,7 +109,7 @@ void robots::handleCollision(robots& other, int flag){//other 是被让的
     if(flag == 2){
         for(int i = 0; i < 5; i++){
             if(trys[i]==next)continue;
-            if(otherdistances[i] > best){
+            if(otherdistances[i] > best && otherdistances[i] < INF){
                 best = otherdistances[i];
                 bestdir = trys[i];
             }
@@ -106,13 +118,14 @@ void robots::handleCollision(robots& other, int flag){//other 是被让的
     if(flag == 1){
         for(int i = 0; i < 5; i++){
             if(trys[i]==next||trys[i]==NONE)continue;
-            if(otherdistances[i] > best){
+            if(otherdistances[i] > best && otherdistances[i] < INF){
                 best = otherdistances[i];
                 bestdir = trys[i];
             }
         }
     }
     next = bestdir;
+
 }
 
 void robots::findCollision(robots& other){
@@ -141,5 +154,50 @@ void robots::findCollision(robots& other){
 }
 
 
-
-
+void robots::findCollision(robots others[], int size){
+    for (int i = 0; i < size; i++) {
+        robots& other = others[i];
+        if(id == other.id){
+            continue;
+        }
+        if(position.getDistance(other.position) > 2){
+            continue;
+        }
+        if(position.moveOneStep(next) == other.position.moveOneStep(other.next)){
+            if(modified > other.modified){//如果自己已经让过了，就不让了
+                other.handleCollision(*this, 2);
+                other.findCollision(others, size);
+            }
+            else if(other.modified < modified){
+                handleCollision(other, 2);
+                findCollision(others, size);
+            }
+            else if(id < other.id){//id大的让
+                other.handleCollision(*this, 2);
+                other.findCollision(others, size);
+            }
+            else{
+                handleCollision(other, 2);
+                findCollision(others, size);
+            }
+        }
+        else if(position.moveOneStep(next) == other.position && position == other.position.moveOneStep(other.next)){
+            if(modified > other.modified){//如果自己已经让过了，就不让了
+                other.handleCollision(*this, 1);
+                other.findCollision(others, size);
+            }
+            else if(other.modified < modified){
+                handleCollision(other, 1);
+                findCollision(others, size);
+            }
+            else if(id < other.id){//id大的让
+                other.handleCollision(*this, 1);
+                other.findCollision(others, size);
+            }
+            else{
+                handleCollision(other, 1);
+                findCollision(others, size);
+            }
+        }
+    }
+}
