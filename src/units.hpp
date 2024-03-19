@@ -4,6 +4,7 @@
 #define RETURN 1
 #define PENDING 2
 
+//关于船的状态
 #define BOAT_MOVING 0
 #define BOAT_LOADING 1
 #define BOAT_PENDING 2
@@ -19,13 +20,17 @@ struct robots{
     box targetBox;
     int boxBFS[MAP_SIZE_X][MAP_SIZE_Y];//目标箱子的bfs结果
     Direction next;
-    int nextOP;
-    void findBest(std::list<box>& boxes, int currentTime);
+    bool pull;
+    bool get;
+    int modified;
+    void initPerFrame(point p);
+    void findBestBox(std::list<box>& boxes, int currentTime);
     void greedyGetNext();
-    bool pull();
-    bool get();
+    bool pullBox();
+    bool getBox();
     void Reset();//以防箱子丢失
     void findCollision(robots& other);
+    void findCollision(robots others[], int size);
     void handleCollision(robots& other, int flag);
 };
 
