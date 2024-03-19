@@ -29,8 +29,8 @@ struct point {
     int x;
     int y;
     point(int x = -1 , int y = -1);
-    point moveOneStep(Direction direction);
-    point moveSteps(Direction direction, int len);
+    point moveOneStep(Direction direction) const;
+    point moveSteps(Direction direction, int len) const;
     int getDistance(const point& other);
     bool isHorizontalOrVertical(const point& other);
     bool valid();
