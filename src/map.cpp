@@ -42,28 +42,6 @@ void mapinfo::bfs(point src,int distances[MAP_SIZE_X][MAP_SIZE_Y]){
 
 mapinfo::mapinfo(char map[MAP_SIZE_X][MAP_SIZE_Y]){
     int count = 0;
-    bool flag = false;
-    for (int i = 0; i <= MAP_SIZE_X - 4; i++) {
-        if(flag) break;
-        for (int j = 0; j <= MAP_SIZE_Y - 4; j++) {
-            if (map[i][j] == 'B' && map[i][j + 1] == 'B' && map[i][j + 2] == 'B' && map[i][j + 3] == 'B' &&
-                map[i + 1][j] == 'B' && map[i + 1][j + 1] == 'B' && map[i + 1][j + 2] == 'B' && map[i + 1][j + 3] == 'B' &&
-                map[i + 2][j] == 'B' && map[i + 2][j + 1] == 'B' && map[i + 2][j + 2] == 'B' && map[i + 2][j + 3] == 'B' &&
-                map[i + 3][j] == 'B' && map[i + 3][j + 1] == 'B' && map[i + 3][j + 2] == 'B' && map[i + 3][j + 3] == 'B') {
-                // Record the minimum vertex index
-                int minX = i;
-                int minY = j;
-                docks[count].position = point(minX, minY);
-                count++;
-            }
-            if(count == NUM_DOCKS){
-                flag = true;
-                break;
-            }
-        }
-    }
-    // count will contain the total number of 4x4 squares with 'B' in the map
-
     for(int i = 0; i < MAP_SIZE_X; i++){
         for(int j = 0; j < MAP_SIZE_Y; j++){
             if(map[i][j] == 'B' || map[i][j] == 'A'|| map[i][j] == '.')//可以通过
