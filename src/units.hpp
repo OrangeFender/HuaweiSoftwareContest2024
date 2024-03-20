@@ -11,7 +11,6 @@ struct boat{
     int setoffTime;//出发时间，第几帧
     int capacity;
     int whichDock;
-    point docks;
 };
 
 struct box{
@@ -22,10 +21,18 @@ struct box{
 };
 
 struct dock{
+    const int threshold1 = 50;
+    const int threshold2 = 20;
+
+    int id;
+    int vLoad;
+    int vRobot;
+    robots* robot;
     point position;
     int distances[MAP_SIZE_X][MAP_SIZE_Y];
-    int status;
+    int counter;//物品数量
     dock();
+    void calcVRobot();
 };
 
 struct robots{
@@ -46,7 +53,6 @@ struct robots{
     bool pullBox();
     bool getBox();
     void Reset();//以防箱子丢失
-    void findCollision(robots& other);
     void findCollision(robots others[], int size);
     void handleCollision(robots& other, int flag);
 };
