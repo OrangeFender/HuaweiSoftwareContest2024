@@ -4,12 +4,29 @@
 #define RETURN 1
 #define PENDING 2
 
-//关于船的状态
-#define BOAT_MOVING 0
-#define BOAT_LOADING 1
-#define BOAT_PENDING 2
-
 #include<list>
+
+
+struct boat{
+    int setoffTime;//出发时间，第几帧
+    int capacity;
+    int whichDock;
+    point docks;
+};
+
+struct box{
+    int value;
+    point position;
+    int bornTime;//出现时间，第几帧
+    box();
+};
+
+struct dock{
+    point position;
+    int distances[MAP_SIZE_X][MAP_SIZE_Y];
+    int status;
+    dock();
+};
 
 struct robots{
     int id;
@@ -32,25 +49,4 @@ struct robots{
     void findCollision(robots& other);
     void findCollision(robots others[], int size);
     void handleCollision(robots& other, int flag);
-};
-
-struct boat{
-    int setoffTime;//出发时间，第几帧
-    int capacity;
-    int whichDock;
-    point docks;
-};
-
-struct box{
-    int value;
-    point position;
-    int bornTime;//出现时间，第几帧
-    box();
-};
-
-struct dock{
-    point position;
-    int distances[MAP_SIZE_X][MAP_SIZE_Y];
-    int status;
-    dock();
 };
