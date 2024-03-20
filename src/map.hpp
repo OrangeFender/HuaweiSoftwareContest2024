@@ -13,4 +13,5 @@ class mapinfo{
     public:
     mapinfo(char map[MAP_SIZE_X][MAP_SIZE_Y]);//初始化码头位置和每个点的距离
     //int getDistance(point p, int dockIndex);
+    
 };
