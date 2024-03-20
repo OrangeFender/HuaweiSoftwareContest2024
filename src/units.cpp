@@ -49,7 +49,7 @@ void robots::findBestBox(std::list<box>& boxes, int currentTime) {
             }
             it = boxes.erase(it);
         } else {
-            int value = (it->value) * 64 / static_cast<int>(it->position.getMapValue(targetDock->distances)); // 价值/距离
+            int value = (it->value) * 64 / (it->position.getMapValue(targetDock->distances)+bias); // 价值/距离
             if (value > bestValue) {
                 bestValue = value;
                 bestBox = *it;
