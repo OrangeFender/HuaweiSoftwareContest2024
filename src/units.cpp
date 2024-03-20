@@ -13,6 +13,22 @@ dock::dock(){
     }
 }
 
+
+void dock::calcVRobot(){
+    vRobot = 0;
+    for(int i = 0; i < MAP_SIZE_X; i++){
+        for(int j = 0; j < MAP_SIZE_Y; j++){
+            if(distances[i][j] < threshold1){
+                vRobot++;
+            }
+            if(distances[i][j] < threshold2){
+                vRobot++;
+            }
+        }
+    }
+}
+
+
 void robots::initPerFrame(point p){
     position = p;
     next = NONE;
@@ -33,7 +49,7 @@ void robots::findBestBox(std::list<box>& boxes, int currentTime) {
             }
             it = boxes.erase(it);
         } else {
-            int value = (it->value) / static_cast<int>(it->position.getMapValue(targetDock->distances)); // 价值/距离
+            int value = (it->value) * 64 / static_cast<int>(it->position.getMapValue(targetDock->distances)); // 价值/距离
             if (value > bestValue) {
                 bestValue = value;
                 bestBox = *it;
@@ -56,6 +72,7 @@ bool robots::pullBox() {
         int dx = targetDock->position.x - position.x;
         int dy = targetDock->position.y - position.y;
         if(dx >= 0 && dx <= 3 && dy >= 0 && dy <= 3){
+            targetDock->counter++;
             pull = true;
             return true;
         }
@@ -127,32 +144,6 @@ void robots::handleCollision(robots& other, int flag){//other 是被让的
     next = bestdir;
 
 }
-
-void robots::findCollision(robots& other){
-    if(id == other.id){
-        return;
-    }
-    if(position.getDistance(other.position) > 2){
-        return;
-    }
-    if(position.moveOneStep(next) == other.position.moveOneStep(other.next)){
-        if(id < other.id){//id大的让
-            other.handleCollision(*this, 2);
-        }
-        else{
-            handleCollision(other, 2);
-        }
-    }
-    else if(position.moveOneStep(next) == other.position && position == other.position.moveOneStep(other.next)){
-        if(id < other.id){
-            other.handleCollision(*this, 1);
-        }
-        else{
-            handleCollision(other, 1);
-        }
-    }
-}
-
 
 void robots::findCollision(robots others[], int size){
     for (int i = 0; i < size; i++) {
