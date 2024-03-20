@@ -36,6 +36,7 @@ struct dock{
 };
 
 struct robots{
+    const int bias = 5;//越大越倾向于价值大的箱子
     int id;
     int Dockid;
     dock* targetDock;
