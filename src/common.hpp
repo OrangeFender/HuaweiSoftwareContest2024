@@ -40,3 +40,13 @@ struct point {
     void setMapValue(T map[MAP_SIZE_X][MAP_SIZE_Y], T value);//设置二维数组的值
     bool operator==(const point& other);
 };
+
+template <typename T>
+T point::getMapValue(T map[MAP_SIZE_X][MAP_SIZE_Y]) {
+    return map[x][y];
+}
+
+template <typename T>
+void point::setMapValue(T map[MAP_SIZE_X][MAP_SIZE_Y], T value) {
+    map[x][y] = value;
+}
