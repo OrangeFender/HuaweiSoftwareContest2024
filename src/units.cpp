@@ -1,5 +1,6 @@
 #include"units.hpp"
 #include"common.hpp"
+#include<iostream>
 
 box::box(){
     
@@ -54,20 +55,30 @@ robot::robot(){
     pull = false;
     get = false;
     modified = 0;
+    haveBox = false;
+    for(int i = 0; i < MAP_SIZE_X; i++){
+        for(int j = 0; j < MAP_SIZE_Y; j++){
+            boxBFS[i][j] = INF;
+        }
+    }
 }
 
 robot::robot(point p,int id){
     position = p;
     this->id = id;
-    status = PENDING;
+    status = RETURN;
     next = NONE;
     pull = false;
     get = false;
     modified = 0;
+    haveBox = false;
 
 }
 
-void robot::initPerFrame(point p){
+void robot::initPerFrame(bool have,point p){
+    if(have!=haveBox){
+        //std::cerr<<"haveBox error"<<std::endl;
+    }
     position = p;
     next = NONE;
     modified = 0;
@@ -76,15 +87,24 @@ void robot::initPerFrame(point p){
 }
 
 
-void robot::findBestBox(std::list<box>& boxes, int currentTime) {
+void robot::findBestBox(std::list<box>& boxes, int currentTime,mapinfo &M) {
+    if(haveBox){
+        return;
+    }
     box bestBox;
     int bestValue = -1;
     auto bestIt = boxes.end();
+    bool flag = false;
+    if(boxes.empty()){
+        status = PENDING;
+        haveBox = false;
+        return;
+    }
     for (auto it = boxes.begin(); it != boxes.end(); ) {
-        if (currentTime - it->bornTime > BOX_LIFE) {
-            if (it == bestIt) {
-                bestIt = boxes.end();
-            }
+        if (currentTime - it->bornTime > BOX_LIFE) {//如果箱子已经存在超过一定时间
+            // if (it == bestIt) {
+            //     bestIt = boxes.end();
+            // }
             it = boxes.erase(it);
         } else {
             int value = (it->value) * 64 / (it->position.getMapValue(targetDock->distances)+bias); // 价值/距离
@@ -92,14 +112,23 @@ void robot::findBestBox(std::list<box>& boxes, int currentTime) {
                 bestValue = value;
                 bestBox = *it;
                 bestIt = it;
+                flag = true;
             }
             ++it;
         }
     }
-    if (bestIt != boxes.end()) {
+    if (flag) {
         boxes.erase(bestIt);
+        targetBox = bestBox;
+        for(int i = 0; i < MAP_SIZE_X; i++){
+            for(int j = 0; j < MAP_SIZE_Y; j++){
+                boxBFS[i][j] = INF;
+            }
+        }
+        M.bfs(bestBox.position, boxBFS);
+        status = FETCH;
     }
-    targetBox = bestBox;
+    
 }
 
 bool robot::pullBox() {
@@ -107,25 +136,32 @@ bool robot::pullBox() {
         return false;
     }
     if(status==RETURN){
-        int dx = targetDock->position.x - position.x;
-        int dy = targetDock->position.y - position.y;
+        int dx = position.x-targetDock->position.x;
+        int dy = position.y-targetDock->position.y;
         if(dx >= 0 && dx <= 3 && dy >= 0 && dy <= 3){
             targetDock->counter++;
             targetDock->counter_summary++;
             targetDock->value_summary += targetBox.value;
-            pull = true;
             status = PENDING;
-            return true;
+            if(haveBox){
+                haveBox = false;
+                pull = true;
+                return true;
+            }
+            pull = false;
+            return false;
         }
     }
     return false;
 }
 
 bool robot::getBox() {
+    if(haveBox)return false;
     if(status==FETCH){
         if(position==targetBox.position){
             get = true;
             status = RETURN;
+            haveBox = true;
             return true;
         }
     }
@@ -133,17 +169,31 @@ bool robot::getBox() {
 }
 
 void robot::greedyGetNext() {
-    if (position == targetBox.position) {
-        next = NONE;
-    }
+    
+    //if (position == targetBox.position) {
+    //    next = NONE;
+    //}
     
     Direction trys[4] = {UP, LEFT, DOWN, RIGHT};
-    int old = position.getMapValue(boxBFS);
-    for(int i = 0; i < 4; i++){
-        if(position.moveOneStep(trys[i]).valid()){
-            if(position.moveOneStep(trys[i]).getMapValue(boxBFS) < old){
-                next = trys[i];
-                return;
+    if(status == FETCH){
+        int old = position.getMapValue(boxBFS);
+        for(int i = 0; i < 4; i++){
+            if(position.moveOneStep(trys[i]).valid()){
+                if(position.moveOneStep(trys[i]).getMapValue(boxBFS) < old){
+                    next = trys[i];
+                    return;
+                }
+            }
+        }
+    }
+    if(status == RETURN){
+        int old = position.getMapValue(targetDock->distances);
+        for(int i = 0; i < 4; i++){
+            if(position.moveOneStep(trys[i]).valid()){
+                if(position.moveOneStep(trys[i]).getMapValue(targetDock->distances) < old){
+                    next = trys[i];
+                    return;
+                }
             }
         }
     }
