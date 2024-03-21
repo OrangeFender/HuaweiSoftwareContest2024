@@ -8,7 +8,7 @@ char map[MAP_SIZE_X][MAP_SIZE_Y];
 
 dock docks[NUM_DOCKS] = {};
 robot robots[NUM_ROBOTS] = {};
-mapinfo M;
+//mapinfo M;
 
 char okk[100] = {};
 
