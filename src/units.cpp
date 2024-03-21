@@ -5,6 +5,12 @@ box::box(){
     
 }
 
+box::box(point p, int v, int time){
+    position = p;
+    value = v;
+    bornTime = time;
+}
+
 boat::boat(){
     //刘志
 }
@@ -41,7 +47,7 @@ void dock::setDistance(mapinfo& M){
 }
 
 robot::robot(){
-    status = PENDING;
+    status = RETURN;//初始状态为返回港口
     next = NONE;
     pull = false;
     get = false;
@@ -106,6 +112,7 @@ bool robot::pullBox() {
             targetDock->counter_summary++;
             targetDock->value_summary += targetBox.value;
             pull = true;
+            status = PENDING;
             return true;
         }
     }
@@ -116,6 +123,7 @@ bool robot::getBox() {
     if(status==FETCH){
         if(position==targetBox.position){
             get = true;
+            status = RETURN;
             return true;
         }
     }
