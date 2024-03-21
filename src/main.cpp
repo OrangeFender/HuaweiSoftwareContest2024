@@ -8,6 +8,7 @@ char map[MAP_SIZE_X][MAP_SIZE_Y];
 
 dock docks[NUM_DOCKS] = {};
 robot robots[NUM_ROBOTS] = {};
+boat boats[NUM_BOATS]={};
 //mapinfo M;
 
 char okk[100] = {};
@@ -36,7 +37,7 @@ int main(){
         docks[i].setDistance(M);
     }
     
-    scanf("%d",&boat::capacity);
+    scanf("%d",&boats[0].capacity);
     
     scanf("%s", okk);
     printf("OK\n");
