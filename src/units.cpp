@@ -5,6 +5,12 @@ box::box(){
     
 }
 
+boat::boat(){
+    status = BOAT_LOADING;
+    setoffTime = 0;
+    whichDock = -1;
+}
+
 dock::dock(){
     for(int i = 0; i < MAP_SIZE_X; i++){
         for(int j = 0; j < MAP_SIZE_Y; j++){
@@ -13,6 +19,13 @@ dock::dock(){
     }
 }
 
+dock::dock(mapinfo& M, point p, int id, int Load){
+    position = p;
+    id = id;
+    M.bfs(p, distances);
+    counter = 0;
+    loading_speed = Load;
+}
 
 void dock::calcVRobot(){
     vRobot = 0;
@@ -28,8 +41,26 @@ void dock::calcVRobot(){
     }
 }
 
+robot::robot(){
+    status = PENDING;
+    next = NONE;
+    pull = false;
+    get = false;
+    modified = 0;
+}
 
-void robots::initPerFrame(point p){
+robot::robot(point p,int id){
+    position = p;
+    this->id = id;
+    status = PENDING;
+    next = NONE;
+    pull = false;
+    get = false;
+    modified = 0;
+
+}
+
+void robot::initPerFrame(point p){
     position = p;
     next = NONE;
     modified = 0;
@@ -38,7 +69,7 @@ void robots::initPerFrame(point p){
 }
 
 
-void robots::findBestBox(std::list<box>& boxes, int currentTime) {
+void robot::findBestBox(std::list<box>& boxes, int currentTime) {
     box bestBox;
     int bestValue = -1;
     auto bestIt = boxes.end();
@@ -64,7 +95,7 @@ void robots::findBestBox(std::list<box>& boxes, int currentTime) {
     targetBox = bestBox;
 }
 
-bool robots::pullBox() {
+bool robot::pullBox() {
     if(position.getMapValue((targetDock->distances)) > 6){
         return false;
     }
@@ -80,7 +111,7 @@ bool robots::pullBox() {
     return false;
 }
 
-bool robots::getBox() {
+bool robot::getBox() {
     if(status==FETCH){
         if(position==targetBox.position){
             get = true;
@@ -90,7 +121,7 @@ bool robots::getBox() {
     return false;
 }
 
-void robots::greedyGetNext() {
+void robot::greedyGetNext() {
     if (position == targetBox.position) {
         next = NONE;
     }
@@ -107,7 +138,7 @@ void robots::greedyGetNext() {
     }
 }
 
-void robots::handleCollision(robots& other, int flag){//other 是被让的
+void robot::handleCollision(robot& other, int flag){//other 是被让的
     modified +=1;
     Direction trys[5] = {UP, LEFT, DOWN, RIGHT, NONE};
     int otherdistances[5];
@@ -145,9 +176,9 @@ void robots::handleCollision(robots& other, int flag){//other 是被让的
 
 }
 
-void robots::findCollision(robots others[], int size){
+void robot::findCollision(robot others[], int size){
     for (int i = 0; i < size; i++) {
-        robots& other = others[i];
+        robot& other = others[i];
         if(id == other.id){
             continue;
         }
@@ -191,4 +222,17 @@ void robots::findCollision(robots others[], int size){
             }
         }
     }
+}
+
+void robot::findBestDock(dock docks[], int size){
+    int best = INF;
+    dock* bestDock = nullptr;
+    for(int i = 0; i < size; i++){
+        if(position.getMapValue(docks[i].distances) < best){
+            best = position.getMapValue(docks[i].distances);
+            bestDock = &docks[i];
+        }
+    }
+    targetDock = bestDock;
+    bestDock->RobotID = id;
 }
