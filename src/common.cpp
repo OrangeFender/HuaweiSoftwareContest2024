@@ -36,7 +36,7 @@ point point::moveOneStep(Direction direction) const {
     case RIGHT:
         return point(x, y + 1);
     case LEFT:
-        return point(x, y + 1 );
+        return point(x, y - 1 );
     case UP:
         return point(x - 1, y);
     case DOWN:
