@@ -8,7 +8,6 @@
 #include<list>
 
 
-
 struct boat{
     int setoffTime;//出发时间，第几帧
     int arriveTime;//到达时间，第几帧
@@ -71,5 +70,7 @@ struct robot{
     void Reset();//以防箱子丢失
     void findCollision(robot others[], int size);//
     void handleCollision(robot& other, int flag);
+    bool Collision(robot others[], int size,bool vec[NUM_ROBOTS]);//判断是否会发生碰撞
+    void RandomMove(mapinfo);//随机移动
     void findBestDock(dock docks[], int size);//初始阶段，找到最优的码头
 };
