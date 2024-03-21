@@ -60,10 +60,11 @@ struct robot{
     bool pull;//放箱子
     bool get;//拿箱子
     int modified;//是否被修改过
+    bool haveBox;//是否有箱子
     robot();
     robot(point p,int id);
-    void initPerFrame(point p);
-    void findBestBox(std::list<box>& boxes, int currentTime);//找到最优的箱子
+    void initPerFrame(bool have,point p);
+    void findBestBox(std::list<box>& boxes, int currentTime, mapinfo &M);//找到最优的箱子
     void greedyGetNext();//计算下一步的方向
     bool pullBox();//放箱子
     bool getBox();//拿箱子
