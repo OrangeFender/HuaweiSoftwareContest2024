@@ -18,8 +18,8 @@ int main(){
     for(int i=0;i<NUM_ROBOTS;i++){
         robots[i].id = i;
     }
-    for(int i = 0; i < MAP_SIZE_X; i++){
-        for(int j = 0; j < MAP_SIZE_Y; j++){
+    for(int j = 0; j < MAP_SIZE_X; j++){
+        for(int i = 0; i < MAP_SIZE_Y; i++){
             scanf("%c", &map[i][j]);
         }
     }
@@ -27,15 +27,16 @@ int main(){
     mapinfo M((char**)map);
 
     for(int i = 0; i < NUM_DOCKS; i++){
-        docks[i].id = i;
+        scanf("%d",& docks[i].id);
         int x, y, s, v;
-        scanf("%d %d %d", &x, &y, &s, &v);
+        scanf("%d %d %d %d", &x, &y, &s, &v);
         docks[i].position = point(x, y);
         docks[i].transport_time = s;
         docks[i].loading_speed = v;
         docks[i].setDistance(M);
     }
     
+    scanf("%d",&boat::capacity);
     
     scanf("%s", okk);
     printf("OK\n");
