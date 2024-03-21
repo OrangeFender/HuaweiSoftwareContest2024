@@ -29,7 +29,7 @@ Direction rotateRight(Direction direction) {
 }
 
 
-point::point(int x = -1 , int y = -1) : x(x), y(y) {}
+point::point(int x, int y) : x(x), y(y) {}
 
 point point::moveOneStep(Direction direction) const {
     switch (direction) {
