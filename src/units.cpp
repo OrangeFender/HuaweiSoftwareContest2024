@@ -11,6 +11,8 @@ box::box(point p, int v, int time){
     bornTime = time;
 }
 
+int boat::capacity = 0;
+
 boat::boat(){
     //刘志
 }
