@@ -53,6 +53,7 @@ mapinfo::mapinfo(char** m){
     }
 }
 
+/*
 void mapinfo::setBots(robot* bots){
     int k=0;
     for(int i=0;i<MAP_SIZE_X;i++){
@@ -64,3 +65,4 @@ void mapinfo::setBots(robot* bots){
         }
     }
 }
+*/
