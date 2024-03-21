@@ -243,7 +243,7 @@ void robot::findCollision(robot others[], int size){
         if(id == other.id){
             continue;
         }
-        if(position.getDistance(other.position) > 2){
+        if(position.getDistance(other.position) > 3){
             continue;
         }
         if(position.moveOneStep(next) == other.position.moveOneStep(other.next)){
@@ -284,6 +284,39 @@ void robot::findCollision(robot others[], int size){
         }
     }
 }
+
+
+bool robot::Collision(robot others[], int size,bool vec[NUM_ROBOTS]){
+    bool flag = false;
+    for (int i = 0; i < size; i++) {
+        robot& other = others[i];
+        if(id == other.id){
+            continue;
+        }
+        if(position.getDistance(other.position) > 3){
+            continue;
+        }
+        if(position.moveOneStep(next) == other.position.moveOneStep(other.next)||(position.moveOneStep(next) == other.position && position == other.position.moveOneStep(other.next))){
+            flag = true;
+            vec[id] = true;
+            vec[other.id] = true;
+        }
+    }
+    return flag;
+}
+
+void robot::RandomMove(mapinfo M){
+    Direction trys[4] = {UP, LEFT, DOWN, RIGHT};
+    while (true)
+    {
+        Direction next = trys[rand()%4];
+        if(position.moveOneStep(next).valid()&&position.moveOneStep(next).getMapValue(M.clearing)){
+            this->next = next;
+            break;
+        }
+    }
+}
+
 
 void robot::findBestDock(dock docks[], int size){
     int best = INF;
