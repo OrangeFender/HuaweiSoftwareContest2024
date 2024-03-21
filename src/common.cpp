@@ -73,16 +73,6 @@ bool point::valid() {
     return x >= 0 && x < MAP_SIZE_X && y >= 0 && y < MAP_SIZE_Y;
 }
 
-template <typename T>
-T point::getMapValue(T map[MAP_SIZE_X][MAP_SIZE_Y]) {
-    return map[x][y];
-}
-
-template <typename T>
-void point::setMapValue(T map[MAP_SIZE_X][MAP_SIZE_Y], T value) {
-    map[x][y] = value;
-}
-
 bool point::operator==(const point& other) {
     return x == other.x && y == other.y;
 }
