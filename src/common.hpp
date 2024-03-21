@@ -10,7 +10,7 @@
 #define MAP_SIZE_X 200
 #define MAP_SIZE_Y 200
 
-#define BOX_LIFE 1000
+#define BOX_LIFE 980
 
 
 
