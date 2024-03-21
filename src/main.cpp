@@ -98,22 +98,39 @@ int main(){
                 robots[i].pullBox();
             }
             if(robots[i].status == PENDING){
-                debugFile<<"boxsize"<<boxes.size()<<std::endl;
+                //debugFile<<"boxsize"<<boxes.size()<<std::endl;
                 robots[i].findBestBox(boxes, realframe,M);
             }
             robots[i].greedyGetNext();
             
             if(robots[i].status == FETCH){
-                debugFile<<"boxpos"<<robots[i].targetBox.position.x<<" "<<robots[i].targetBox.position.y<<std::endl;
-                debugFile<<"id"<<i<<" x:"<<robots[i].position.x<<" y:"<<robots[i].position.y<<" Dis:"<<robots[i].position.getMapValue(robots[i].boxBFS)<<" dir:"<<robots[i].next<<" nextDis:"<<robots[i].position.moveOneStep(robots[i].next).getMapValue(robots[i].boxBFS)<<std::endl;        
+                //debugFile<<"boxpos"<<robots[i].targetBox.position.x<<" "<<robots[i].targetBox.position.y<<std::endl;
+                //debugFile<<"id"<<i<<" x:"<<robots[i].position.x<<" y:"<<robots[i].position.y<<" Dis:"<<robots[i].position.getMapValue(robots[i].boxBFS)<<" dir:"<<robots[i].next<<" nextDis:"<<robots[i].position.moveOneStep(robots[i].next).getMapValue(robots[i].boxBFS)<<std::endl;        
             }
             //debugFile<<"id"<<i<<" x:"<<robots[i].position.x<<" y:"<<robots[i].position.y<<" Dis:"<<robots[i].position.getMapValue(robots[i].targetDock->distances)<<" dir:"<<robots[i].next<<" nextDis:"<<robots[i].position.moveOneStep(robots[i].next).getMapValue(robots[i].targetDock->distances)<<std::endl;
         }
-        
-        for(int i = 0; i < NUM_BOATS; i++){
-            robots[i].findCollision(robots, NUM_ROBOTS);
-        }
 
+        bool flag = false;
+        do{
+            bool Vec[NUM_ROBOTS];
+            for(int i = 0; i < NUM_ROBOTS; i++){
+                Vec[i] = false;//初始化
+            }
+            flag = false;
+            for(int i = 0; i < NUM_BOATS; i++){
+                if(robots[i].Collision(robots, NUM_ROBOTS, Vec))flag = true;
+            }
+            for(int i = 0; i < NUM_ROBOTS; i++){
+                if(Vec[i]){
+                    debugFile<<"id"<<i<<" x:"<<robots[i].position.x<<" y:"<<robots[i].position.y<<std::endl;
+                    debugFile<<"dir"<<robots[i].next<<std::endl;
+                    robots[i].RandomMove(M);
+                    debugFile<<"dirafterRandom"<<robots[i].next<<std::endl;
+                }
+            }
+        }while (flag);
+        
+        
 
         //输出数据
         for(int i = 0; i < NUM_ROBOTS; i++){
