@@ -6,10 +6,11 @@
 
 class mapinfo{
     int nowTime;
-    bool clearing[MAP_SIZE_X][MAP_SIZE_Y];//表示可以行走
+    
     //int distances[NUM_DOCKS][MAP_SIZE_X][MAP_SIZE_Y];
     
 public:
+    bool clearing[MAP_SIZE_X][MAP_SIZE_Y];//表示可以行走
     
     void dfs(point src, int distance,int distances[MAP_SIZE_X][MAP_SIZE_Y] );
     void bfs(point src,int distances[MAP_SIZE_X][MAP_SIZE_Y]);
