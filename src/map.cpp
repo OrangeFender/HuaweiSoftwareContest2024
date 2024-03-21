@@ -1,5 +1,5 @@
 #include "map.hpp"
-
+#include "units.hpp"
 
 void mapinfo::dfs(point src, int distance, int distances[MAP_SIZE_X][MAP_SIZE_Y]) {
     // Check if the current position is within the map boundaries
@@ -40,7 +40,8 @@ void mapinfo::bfs(point src,int distances[MAP_SIZE_X][MAP_SIZE_Y]){
     }
 }
 
-mapinfo::mapinfo(char map[MAP_SIZE_X][MAP_SIZE_Y]){
+mapinfo::mapinfo(char** m){
+    map = m;
     int count = 0;
     for(int i = 0; i < MAP_SIZE_X; i++){
         for(int j = 0; j < MAP_SIZE_Y; j++){
@@ -48,6 +49,18 @@ mapinfo::mapinfo(char map[MAP_SIZE_X][MAP_SIZE_Y]){
                 clearing[i][j] = true;
             else
                 clearing[i][j] = false;
+        }
+    }
+}
+
+void mapinfo::setBots(robot* bots){
+    int k=0;
+    for(int i=0;i<MAP_SIZE_X;i++){
+        for(int j=0;j<MAP_SIZE_Y;j++){
+            if(map[i][j]=='A'){
+                bots[k].position = point(i,j);
+                k++;
+            }
         }
     }
 }
