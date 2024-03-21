@@ -6,12 +6,14 @@ box::box(){
 }
 
 boat::boat(){
-    status = BOAT_LOADING;
-    setoffTime = 0;
-    whichDock = -1;
+    //刘志
 }
 
 dock::dock(){
+    RobotID = -1;
+    counter = 0;
+    counter_summary = 0;
+    value_summary = 0;
     for(int i = 0; i < MAP_SIZE_X; i++){
         for(int j = 0; j < MAP_SIZE_Y; j++){
             distances[i][j] = INF;
@@ -19,13 +21,6 @@ dock::dock(){
     }
 }
 
-dock::dock(mapinfo& M, point p, int id, int Load){
-    position = p;
-    id = id;
-    M.bfs(p, distances);
-    counter = 0;
-    loading_speed = Load;
-}
 
 void dock::calcVRobot(){
     vRobot = 0;
@@ -39,6 +34,10 @@ void dock::calcVRobot(){
             }
         }
     }
+}
+
+void dock::setDistance(mapinfo& M){
+    M.bfs(position, distances);
 }
 
 robot::robot(){
@@ -104,6 +103,8 @@ bool robot::pullBox() {
         int dy = targetDock->position.y - position.y;
         if(dx >= 0 && dx <= 3 && dy >= 0 && dy <= 3){
             targetDock->counter++;
+            targetDock->counter_summary++;
+            targetDock->value_summary += targetBox.value;
             pull = true;
             return true;
         }
@@ -228,6 +229,7 @@ void robot::findBestDock(dock docks[], int size){
     int best = INF;
     dock* bestDock = nullptr;
     for(int i = 0; i < size; i++){
+        if(docks[i].RobotID != -1)continue;
         if(position.getMapValue(docks[i].distances) < best){
             best = position.getMapValue(docks[i].distances);
             bestDock = &docks[i];
