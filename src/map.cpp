@@ -31,7 +31,7 @@ void mapinfo::bfs(point src,int distances[MAP_SIZE_X][MAP_SIZE_Y]){
         for (int i = 0; i < 4; i++) {
             Direction dir = directions[i];
             point nextPoint = p.moveOneStep(dir);
-            if(nextPoint.valid())break;
+            if(!nextPoint.valid())continue;
             if(nextPoint.getMapValue(clearing) && nextPoint.getMapValue(distances) == INF){
                 nextPoint.setMapValue(distances, p.getMapValue(distances) + 1);
                 queue.push_back(nextPoint);
@@ -40,12 +40,11 @@ void mapinfo::bfs(point src,int distances[MAP_SIZE_X][MAP_SIZE_Y]){
     }
 }
 
-mapinfo::mapinfo(char** m){
-    map = m;
-    int count = 0;
+mapinfo::mapinfo(char m[MAP_SIZE_X+5][MAP_SIZE_Y+5]){
+    //int count = 0;
     for(int i = 0; i < MAP_SIZE_X; i++){
         for(int j = 0; j < MAP_SIZE_Y; j++){
-            if(map[i][j] == 'B' || map[i][j] == 'A'|| map[i][j] == '.')//可以通过
+            if(m[i][j] == 'B' || m[i][j] == 'A'|| m[i][j] == '.')//可以通过
                 clearing[i][j] = true;
             else
                 clearing[i][j] = false;
