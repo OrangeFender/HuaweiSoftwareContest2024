@@ -2,7 +2,7 @@
 #include<vector>
 
 
-class robot;
+//class robot;
 
 class mapinfo{
     int nowTime;
@@ -16,5 +16,5 @@ class mapinfo{
     void bfs(point src,int distances[MAP_SIZE_X][MAP_SIZE_Y]);
     mapinfo(char** map);//初始化码头位置和每个点的距离
     //int getDistance(point p, int dockIndex);
-    void setBots(robot* bots);
+    //void setBots(robot* bots);
 };
