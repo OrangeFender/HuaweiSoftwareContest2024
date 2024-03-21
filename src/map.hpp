@@ -1,8 +1,8 @@
+#ifndef MAP_HPP
+#define MAP_HPP
+
 #include "common.hpp"
-#include<vector>
-
-
-//class robot;
+#include <vector>
 
 class mapinfo{
     int nowTime;
@@ -10,7 +10,7 @@ class mapinfo{
     //int distances[NUM_DOCKS][MAP_SIZE_X][MAP_SIZE_Y];
     char** map;
     
-    public:
+public:
     
     void dfs(point src, int distance,int distances[MAP_SIZE_X][MAP_SIZE_Y] );
     void bfs(point src,int distances[MAP_SIZE_X][MAP_SIZE_Y]);
@@ -18,3 +18,5 @@ class mapinfo{
     //int getDistance(point p, int dockIndex);
     //void setBots(robot* bots);
 };
+
+#endif // MAP_HPP
