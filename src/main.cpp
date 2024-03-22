@@ -107,7 +107,7 @@ int main(){
         for(int i = 0; i < NUM_BOATS; i++){
             int sts, pos;
             scanf("%d %d\n", &sts, &pos);
-            boats[i].boat_ope(sts, pos, realframe, docks[boats[i].whichDock1], docks[boats[i].whichDock2]);//返回值 0:不操作 1:去港口1 2:去港口2 3:去虚拟点
+            boats[i].boat_ope(sts, pos, realframe, docks[boats[i].whichDock1], docks[boats[i].whichDock2],10000);//返回值 0:不操作 1:去港口1 2:去港口2 3:去虚拟点
         }
         scanf("%s", okk);
         //处理数据
