@@ -30,8 +30,9 @@ void boat_bind_dock(boat* boat_arr, dock* dock_arr)
 
     for (int i = 0; i < NUM_BOATS; i++)
     {
-        boat_arr[i].whichDock1 = dock_vector[i].id;
-        boat_arr[i].whichDock2 = dock_vector[NUM_DOCKS - 1 - i].id;
+        boat_arr[i].whichDock1 = dock_vector[NUM_DOCKS - 1 - i].id;//空旷度最小
+        boat_arr[i].whichDock2 = dock_vector[i].id;
+        dock_vector[NUM_DOCKS - 1 - i].friendDock = &dock_vector[i];
     }
 }
 
@@ -390,6 +391,7 @@ dock::dock(){
     counter = 0;
     counter_summary = 0;
     value_summary = 0;
+    friendDock = nullptr;
     for(int i = 0; i < MAP_SIZE_X; i++){
         for(int j = 0; j < MAP_SIZE_Y; j++){
             distances[i][j] = INF;
@@ -402,7 +404,7 @@ void dock::calcVRobot(){
     vRobot = 0;
     for(int i = 0; i < MAP_SIZE_X; i++){
         for(int j = 0; j < MAP_SIZE_Y; j++){
-            if(distances[i][j] != INF&&distances[i][j]!=0)
+            if(distances[i][j] != INF&&distances[i][j]!=0&&distances[i][j]<120)
             vRobot += 10.0/distances[i][j];
         }
     }
