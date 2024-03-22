@@ -1,11 +1,23 @@
 #include"common.hpp"
 #include"map.hpp"
+#include<list>
+#include <algorithm>
+#include <vector>
+
+
 //关于机器人的状态
 #define FETCH 0 //去拿箱子
 #define RETURN 1 //去送箱子
 #define PENDING 2 //未指定箱子
 
-#include<list>
+//0:不操作 1:去港口1 2:去港口2 3:去虚拟点
+#define BOAT_NONE 0
+#define BOATGO_DOCK1 1
+#define BOATGO_DOCK2 2
+#define BOATGO_VIRTUAL 3
+
+#define BOAT_MOVING 0
+#define BOAT_LOADING 1
 
 
 // struct boat{
@@ -17,6 +29,8 @@
 //     boat();
 // };
 
+struct dock;
+
 struct boat {
     int setoffTime;//出发时间，第几帧
     //int arriveTime;//到达时间，第几帧
@@ -24,18 +38,17 @@ struct boat {
     int whichDock1;//虚拟点到dock1  0-9
     int whichDock2;//dock2到虚拟点
     int id;//船的标号1-5
-    int pos;//船当前的目的地  1代表去dock1，2代表去dock2，-1代表去泊位
+    int pos;//船当前的目的地  1代表去dock1，2代表去dock2，-1代表去虚拟点
     int status;//船当前的状态
-    int goods_num;//当前装载的货物量    
+    int goods_num;//当前装载的货物量
+    int operation;//当前操作
 
     boat();
-    boat(int SetTime, int Capacity, int dock1, int dock2, int ID, int Des, int Status, int Goods_num);
+    boat(int SetTime, int dock1, int dock2, int ID, int Des, int Status, int Goods_num);
     int cal_arriveTime(dock dock1,dock dock2,int setoffTime, int pos);
     int boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2);//返回值 0:不操作 1:去港口1 2:去港口2 3:去虚拟点
     
 };
-
-
 
 
 struct box{
@@ -48,8 +61,8 @@ struct box{
 
 
 struct dock{
-    const int threshold1 = 50;
-    const int threshold2 = 20;
+    int threshold1 {50};
+    int threshold2 {20};
 
     int id;
     int transport_time;//到虚拟点的时间
@@ -66,6 +79,10 @@ struct dock{
     void calcVRobot();//计算机器人的效率
     void setDistance(mapinfo& M);//BFS
 };
+
+
+void boat_bind_dock(boat* boat_arr, dock* dock_arr);
+
 
 struct robot{
     const int bias = 5;//越大越倾向于价值大的箱子
