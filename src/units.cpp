@@ -19,7 +19,7 @@ box::box(point p, int v, int time){
 
 bool compareT(const dock& a, const dock& b)
 {
-    return a.transport_time > b.transport_time;  // 使用 ">" 运算符实现降序排序
+    return a.vRobot > b.vRobot;  // 使用 ">" 运算符实现降序排序
 }
 
 void boat_bind_dock(boat* boat_arr, dock* dock_arr)
@@ -368,13 +368,15 @@ void robot::greedyGetNext() {
     //    next = NONE;
     //}
     
-    Direction trys[4] = {UP, LEFT, DOWN, RIGHT};
+    Direction trys[2][4] = {{UP, LEFT, DOWN, RIGHT},{RIGHT, DOWN, LEFT, UP}};
+    int random = rand()%2;
+
     if(status == FETCH){
         int old = position.getMapValue(boxBFS);
         for(int i = 0; i < 4; i++){
-            if(position.moveOneStep(trys[i]).valid()){
-                if(position.moveOneStep(trys[i]).getMapValue(boxBFS) < old){
-                    next = trys[i];
+            if(position.moveOneStep(trys[random][i]).valid()){
+                if(position.moveOneStep(trys[random][i]).getMapValue(boxBFS) < old){
+                    next = trys[random][i];
                     return;
                 }
             }
@@ -383,9 +385,9 @@ void robot::greedyGetNext() {
     if(status == RETURN){
         int old = position.getMapValue(targetDock->distances);
         for(int i = 0; i < 4; i++){
-            if(position.moveOneStep(trys[i]).valid()){
-                if(position.moveOneStep(trys[i]).getMapValue(targetDock->distances) < old){
-                    next = trys[i];
+            if(position.moveOneStep(trys[random][i]).valid()){
+                if(position.moveOneStep(trys[random][i]).getMapValue(targetDock->distances) < old){
+                    next = trys[random][i];
                     return;
                 }
             }
@@ -503,9 +505,9 @@ void robot::RandomMove(mapinfo M){
     Direction trys[4] = {UP, LEFT, DOWN, RIGHT};
     while (true)
     {
-        Direction next = trys[rand()%4];
-        if(position.moveOneStep(next).valid()&&position.moveOneStep(next).getMapValue(M.clearing)){
-            this->next = next;
+        Direction Next = trys[rand()%4];
+        if(position.moveOneStep(Next).valid()&&position.moveOneStep(Next).getMapValue(M.clearing)){
+            next = Next;
             break;
         }
     }
@@ -521,7 +523,12 @@ void robot::findBestDock(dock docks[], int size){
             best = position.getMapValue(docks[i].distances);
             bestDock = &docks[i];
         }
+        //if(position.getMapValue(docks[i].distances) == INF){
+        //    targetDock = nullptr;
+        //    return;
+        //}
     }
     targetDock = bestDock;
-    bestDock->RobotID = id;
+    if(targetDock != nullptr)
+        bestDock->RobotID = id;
 }
