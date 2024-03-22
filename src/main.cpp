@@ -191,6 +191,17 @@ int main(){
         }
         printf("OK\n");
         fflush(stdout);
+
+        int sum=0;
+        if (realframe==14999){
+            for(int i =0;i<NUM_DOCKS;i++){
+                sum+=docks[i].value_summary;
+                debugFile<<"time"<<frame<<std::endl;
+                debugFile<<"dock"<<i<<" "<<docks[i].counter<<" "<<docks[i].counter_summary<<" "<<docks[i].value_summary<<"Vrobot"<<docks[i].vRobot<<std::endl;
+            }
+            debugFile<<"sum "<<sum<<std::endl;
+        }
+    
     }
     return 0;
 }
