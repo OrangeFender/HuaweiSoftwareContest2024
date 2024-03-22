@@ -42,6 +42,7 @@ int main(){
         docks[i].transport_time = s;
         docks[i].loading_speed = v;
         docks[i].setDistance(M);
+        docks[i].calcVRobot();
         // for(int ii=0;ii<MAP_SIZE_X;ii++){
         //     for(int jj=0;jj<MAP_SIZE_Y;jj++){
         //         std::cout<<docks[i].distances[ii][jj]<<" ";
