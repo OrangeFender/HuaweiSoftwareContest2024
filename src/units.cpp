@@ -1,6 +1,9 @@
 #include"units.hpp"
 #include"common.hpp"
 #include<iostream>
+#include <algorithm>
+#include <vector>
+
 
 box::box(){
     
@@ -12,11 +15,144 @@ box::box(point p, int v, int time){
     bornTime = time;
 }
 
-int boat::capacity = 0;
 
-boat::boat(){
-    //刘志
+using std::vector;
+
+bool compareT(const dock& a, const dock& b)
+{
+    return a.transport_time > b.transport_time;  // 使用 ">" 运算符实现降序排序
 }
+
+void boat_bind_dock(boat* boat_arr, dock* dock_arr)
+{
+
+    vector<dock> dock_vector(dock_arr, dock_arr + NUM_DOCKS);
+    sort(dock_vector.begin(), dock_vector.end(), compareT); // 降序排序
+
+    for (int i = 0; i < NUM_BOATS; i++)
+    {
+        boat_arr[i].whichDock1 = dock_vector[i].id;
+        boat_arr[i].whichDock2 = dock_vector[NUM_DOCKS - 1 - i].id;
+    }
+}
+
+//int boat::capacity = 0;
+
+boat::boat() {
+    setoffTime = 0;
+    capacity = 0;
+    id = 0;
+    pos = -1;
+    status = 1;
+    goods_num = 0;
+}
+
+boat::boat(int SetTime, int Capacity, int dock1, int dock2, int ID, int Des, int Status, int Goods_num)
+{
+    setoffTime = SetTime;
+    capacity = Capacity;
+    whichDock1 = dock1;
+    whichDock2 = dock2;
+    id = ID;
+    pos = Des;
+    status = Status;
+    goods_num = Goods_num;
+    
+}
+
+int boat::cal_arriveTime(dock dock1,dock dock2, int setoffTime, int pos)
+{
+    int arriveTime = setoffTime;
+
+    switch (pos)
+    {
+    case 1: // 虚拟点到dock1
+        arriveTime = setoffTime + dock1.transport_time;
+        break;
+    case 2: // dock1到dock2
+        arriveTime = setoffTime + 500;
+        break;
+    case -1: // dock2去虚拟点
+        arriveTime = setoffTime + dock2.transport_time;
+        break;
+    default:
+        // 处理未知的pos值，这里可以选择抛出异常或进行默认处理
+        break;
+    }
+
+    return arriveTime;
+}
+
+int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2)
+{
+    //由于一艘船对应两个港口，所以不会出现在泊位外等待的情况，不用考虑boat_arr[i].status == 2的情况
+
+    status = sta;
+    if (dock_id == whichDock1)
+        pos = 1;
+    if (dock_id == whichDock2)
+        pos = 2;
+    if (dock_id == -1)
+        pos = -1;
+    if (status == 0)  //如果移动中，就不需要对船进行操作
+    {
+        return 0;
+    }
+    if (status == 1)  //如果正常运行状态
+    {
+        if (pos == -1)  //目标港口为-1，代表运输完成，那么返回港口1
+        {
+            goods_num = 0;
+            pos = 1;
+            setoffTime = time;
+            return 1;
+        }
+        if (pos == 1)  //在港口1进行装货
+        {
+            if (dock1.counter == 0)  //港口1货装完了，就去港口2
+            {
+                pos = 2;
+                setoffTime = time;
+                return 2;
+            }
+            if (dock1.counter >= dock1.loading_speed)  //有货继续装
+            {
+                goods_num += dock1.loading_speed;
+                dock1.counter-= dock1.loading_speed;
+                return 0;
+            }
+            if (dock1.counter < dock1.loading_speed && dock1.counter>0)
+            {
+                goods_num += dock1.counter;
+                dock1.counter -= dock1.counter;
+                return 0;
+            }
+
+        }
+        if (pos == 2)  //在港口2进行装货
+        {
+            if (dock2.counter == 0)  //港口2货装完了，就去虚拟点
+            {
+                pos = 3;
+                setoffTime = time;
+                return 3;
+            }
+            if (dock2.counter >= dock2.loading_speed)  //有货继续装
+            {
+                goods_num += dock2.loading_speed;
+                dock2.counter -= dock2.loading_speed;
+                return 0;
+            }
+            if (dock2.counter < dock2.loading_speed && dock2.counter>0)
+            {
+                goods_num += dock2.counter;
+                dock2.counter -= dock2.counter;
+                return 0;
+            }
+        }
+    }
+}
+
 
 dock::dock(){
     RobotID = -1;
