@@ -20,7 +20,9 @@ char okk[100] = {};
 std::list<box> boxes;
 
 int main(){
-    
+    //初始化随机数种子
+    srand(time(0));
+
     std::ofstream debugFile("debug.txt");
 
     for(int i=0;i<NUM_ROBOTS;i++){
@@ -73,6 +75,7 @@ int main(){
             boxes.push_back(b);//将箱子加入箱子列表
         }
         for(int i = 0; i < NUM_ROBOTS; i++){
+            debugFile<<"id"<<i<<std::endl;
             int have, x, y, sts;
             scanf("%d %d %d %d", &have, &x, &y, &sts);
             //debugFile<<"id"<<i<<" x:"<<x<<" y:"<<y<<std::endl;
@@ -81,7 +84,10 @@ int main(){
             //robots[i].status = sts;
             if (frame==1){//第一帧匹配港口
                 robots[i].findBestDock(docks, NUM_DOCKS);
-                std::cerr<<"dock "<<robots[i].targetDock->id<<std::endl;
+                if(robots[i].targetDock==NULL){
+                    debugFile<<"robot "<<i<<" sleeping"<<std::endl;
+                }
+                //debugFile<<"dock "<<robots[i].targetDock->id<<std::endl;
                 // for(int ii=0;ii<MAP_SIZE_X;ii++){
                 //     for(int jj=0;jj<MAP_SIZE_Y;jj++){
                 //         std::cerr<<robots[i].targetDock->distances[ii][jj]<<" ";
@@ -89,6 +95,13 @@ int main(){
                 //     std::cerr<<std::endl;
                 // }
             }
+
+            if(frame==25){
+                if(robots[i].status==RETURN&&robots[i].haveBox==false){
+                    robots[i].status==PENDING;
+                }
+            }
+
         }
         for(int i = 0; i < NUM_BOATS; i++){
             int sts, pos;
@@ -98,6 +111,10 @@ int main(){
         scanf("%s", okk);
         //处理数据
         for(int i = 0; i < NUM_ROBOTS; i++){
+            if(robots[i].targetDock==NULL){
+                //debugFile<<"robot "<<i<<" sleeping"<<std::endl;
+                continue;
+            }
             if(robots[i].status == FETCH){
                 robots[i].getBox();
             }
@@ -117,6 +134,8 @@ int main(){
             //debugFile<<"id"<<i<<" x:"<<robots[i].position.x<<" y:"<<robots[i].position.y<<" Dis:"<<robots[i].position.getMapValue(robots[i].targetDock->distances)<<" dir:"<<robots[i].next<<" nextDis:"<<robots[i].position.moveOneStep(robots[i].next).getMapValue(robots[i].targetDock->distances)<<std::endl;
         }
 
+
+
         bool flag = false;
         do{
             bool Vec[NUM_ROBOTS];
@@ -124,10 +143,12 @@ int main(){
                 Vec[i] = false;//初始化
             }
             flag = false;
-            for(int i = 0; i < NUM_BOATS; i++){
+            for(int i = 0; i < NUM_ROBOTS; i++){
+                if(robots[i].targetDock==NULL)continue;
                 if(robots[i].Collision(robots, NUM_ROBOTS, Vec))flag = true;
             }
             for(int i = 0; i < NUM_ROBOTS; i++){
+                if(robots[i].targetDock==NULL)continue;
                 if(Vec[i]){
                     debugFile<<"id"<<i<<" x:"<<robots[i].position.x<<" y:"<<robots[i].position.y<<std::endl;
                     debugFile<<"dir"<<robots[i].next<<std::endl;
