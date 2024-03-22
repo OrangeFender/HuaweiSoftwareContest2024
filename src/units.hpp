@@ -42,11 +42,11 @@ struct boat {
     int status;//船当前的状态
     int goods_num;//当前装载的货物量
     int operation;//当前操作
-
+    int flag;//0代表未拾取第二阶段的dock1  1代表已经拾取了dock1
     boat();
     boat(int SetTime, int dock1, int dock2, int ID, int Des, int Status, int Goods_num);
     int cal_arriveTime(dock dock1,dock dock2,int setoffTime, int pos);
-    int boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2);//返回值 0:不操作 1:去港口1 2:去港口2 3:去虚拟点
+    int boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2,int seperate_time);//返回值 0:不操作 1:去港口1 2:去港口2 3:去虚拟点
     
 };
 
@@ -67,7 +67,7 @@ struct dock{
     int id;
     int transport_time;//到虚拟点的时间
     int loading_speed;//装箱速度
-    double vRobot;//机器人的效率（空旷程度）
+    int vRobot;//机器人的效率（空旷程度）
     int RobotID;//对应的机器人ID
     point position;//左上角坐标
     int distances[MAP_SIZE_X][MAP_SIZE_Y];//到每个点的距离，用BFS计算
@@ -105,7 +105,6 @@ struct robot{
     bool pullBox();//放箱子
     bool getBox();//拿箱子
     void Reset();//以防箱子丢失
-    void findBestBox(robot others[],std::list<box>& boxes, int currentTime,mapinfo &M);
     void findBestBox(std::list<box>& boxes, int currentTime,mapinfo &M);
     void findCollision(robot others[], int size);//
     void handleCollision(robot& other, int flag);
