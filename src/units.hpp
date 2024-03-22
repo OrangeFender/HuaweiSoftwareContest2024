@@ -67,13 +67,14 @@ struct dock{
     int id;
     int transport_time;//到虚拟点的时间
     int loading_speed;//装箱速度
-    int vRobot;//机器人的效率（空旷程度）
+    double vRobot;//机器人的效率（空旷程度）
     int RobotID;//对应的机器人ID
     point position;//左上角坐标
     int distances[MAP_SIZE_X][MAP_SIZE_Y];//到每个点的距离，用BFS计算
     int counter;//当前物品数量
     int counter_summary;//记录物品总数目
     int value_summary;//记录物品总价值
+    dock* friendDock;//对应的另一个码头
     dock();
     dock(mapinfo& M, point p, int id,int Load);//初始化码头位置和每个点的距离
     void calcVRobot();//计算机器人的效率
