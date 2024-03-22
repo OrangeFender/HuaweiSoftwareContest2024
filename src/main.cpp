@@ -11,7 +11,8 @@ char m[MAP_SIZE_X+5][MAP_SIZE_Y+5];
 
 dock docks[NUM_DOCKS] = {};
 robot robots[NUM_ROBOTS] = {};
-boat boats[NUM_BOATS]={};
+boat boats[NUM_BOATS];
+int boat::capacity = 0;
 //mapinfo M;
 
 char okk[100] = {};
@@ -46,9 +47,15 @@ int main(){
         //     std::cout<<std::endl;
         // }
     }
-    
-    scanf("%d",&boats[0].capacity);
-    
+
+    scanf("%d",&boat::capacity);
+
+    for(int i = 0; i < NUM_BOATS; i++){
+        boats[i]=boat(1,-1,-1,i,-1,BOAT_LOADING,0);
+    }
+
+    boat_bind_dock(boats, docks);
+
     scanf("%s", okk);
     printf("OK\n");
     fflush(stdout);
@@ -86,7 +93,7 @@ int main(){
         for(int i = 0; i < NUM_BOATS; i++){
             int sts, pos;
             scanf("%d %d\n", &sts, &pos);
-            //
+            boats[i].boat_ope(sts, pos, realframe, docks[boats[i].whichDock1], docks[boats[i].whichDock2]);//返回值 0:不操作 1:去港口1 2:去港口2 3:去虚拟点
         }
         scanf("%s", okk);
         //处理数据
@@ -144,10 +151,22 @@ int main(){
                 printf("move %d %d\n",i , (int)robots[i].next);
             }
         }
-
-
-
-
+        for(int i = 0; i < NUM_BOATS; i++){
+            switch (boats[i].operation)
+            {
+            case BOAT_NONE:
+                break;
+            case BOATGO_DOCK1:
+                printf("ship %d %d\n", i, boats[i].whichDock1);
+                break;
+            case BOATGO_DOCK2:
+                printf("ship %d %d\n", i, boats[i].whichDock2);
+                break;
+            case BOATGO_VIRTUAL:
+                printf("go %d\n", i);
+                break;
+            }
+        }
         printf("OK\n");
         fflush(stdout);
     }
