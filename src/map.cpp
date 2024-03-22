@@ -21,6 +21,12 @@ void mapinfo::dfs(point src, int distance, int distances[MAP_SIZE_X][MAP_SIZE_Y]
 
 //从码头到每个点的最短距离
 void mapinfo::bfs(point src,int distances[MAP_SIZE_X][MAP_SIZE_Y]){
+    for(int i = 0; i < MAP_SIZE_X; i++){
+        for(int j = 0; j < MAP_SIZE_Y; j++){
+            distances[i][j] = INF;
+        }
+    }
+
     std::vector<point> queue;
     queue.push_back(src);
     src.setMapValue(distances, 0);
