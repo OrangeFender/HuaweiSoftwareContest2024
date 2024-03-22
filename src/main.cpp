@@ -76,7 +76,7 @@ int main(){
             boxes.push_back(b);//将箱子加入箱子列表
         }
         for(int i = 0; i < NUM_ROBOTS; i++){
-            debugFile<<"id"<<i<<std::endl;
+            //debugFile<<"id"<<i<<std::endl;
             int have, x, y, sts;
             scanf("%d %d %d %d", &have, &x, &y, &sts);
             //debugFile<<"id"<<i<<" x:"<<x<<" y:"<<y<<std::endl;
@@ -86,7 +86,7 @@ int main(){
             if (frame==1){//第一帧匹配港口
                 robots[i].findBestDock(docks, NUM_DOCKS);
                 if(robots[i].targetDock==NULL){
-                    debugFile<<"robot "<<i<<" sleeping"<<std::endl;
+                    //debugFile<<"robot "<<i<<" sleeping"<<std::endl;
                 }
                 //debugFile<<"dock "<<robots[i].targetDock->id<<std::endl;
                 // for(int ii=0;ii<MAP_SIZE_X;ii++){
