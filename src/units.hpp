@@ -67,7 +67,7 @@ struct dock{
     int id;
     int transport_time;//到虚拟点的时间
     int loading_speed;//装箱速度
-    int vRobot;//机器人的效率（空旷程度）
+    double vRobot;//机器人的效率（空旷程度）
     int RobotID;//对应的机器人ID
     point position;//左上角坐标
     int distances[MAP_SIZE_X][MAP_SIZE_Y];//到每个点的距离，用BFS计算
@@ -105,6 +105,7 @@ struct robot{
     bool pullBox();//放箱子
     bool getBox();//拿箱子
     void Reset();//以防箱子丢失
+    void findBestBox(robot others[],std::list<box>& boxes, int currentTime,mapinfo &M);
     void findBestBox(std::list<box>& boxes, int currentTime,mapinfo &M);
     void findCollision(robot others[], int size);//
     void handleCollision(robot& other, int flag);
