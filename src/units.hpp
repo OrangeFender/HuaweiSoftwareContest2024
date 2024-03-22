@@ -85,7 +85,7 @@ void boat_bind_dock(boat* boat_arr, dock* dock_arr);
 
 
 struct robot{
-    const int bias = 5;//越大越倾向于价值大的箱子
+    const int bias = 10;//越大越倾向于价值大的箱子
     int id;
     int Dockid;//对应的码头ID
     dock* targetDock;//目标码头指针
@@ -101,11 +101,11 @@ struct robot{
     robot();
     robot(point p,int id);
     void initPerFrame(bool have,point p);
-    void findBestBox(std::list<box>& boxes, int currentTime, mapinfo &M);//找到最优的箱子
     void greedyGetNext();//计算下一步的方向
     bool pullBox();//放箱子
     bool getBox();//拿箱子
     void Reset();//以防箱子丢失
+    void findBestBox(std::list<box>& boxes, int currentTime,mapinfo &M);
     void findCollision(robot others[], int size);//
     void handleCollision(robot& other, int flag);
     bool Collision(robot others[], int size,bool vec[NUM_ROBOTS]);//判断是否会发生碰撞
