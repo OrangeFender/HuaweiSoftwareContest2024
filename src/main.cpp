@@ -103,6 +103,16 @@ int main(){
                 }
             }
 
+            if(realframe==10000){
+                if(robots[i].targetDock!=NULL){
+                    if(robots[i].targetDock->friendDock!=NULL){
+                        robots[i].targetDock=robots[i].targetDock->friendDock;
+                        robots[i].status=RETURN;
+                    }
+                
+                }
+            }
+
         }
         for(int i = 0; i < NUM_BOATS; i++){
             int sts, pos;
