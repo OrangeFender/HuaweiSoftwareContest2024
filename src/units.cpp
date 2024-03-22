@@ -229,12 +229,8 @@ void dock::calcVRobot(){
     vRobot = 0;
     for(int i = 0; i < MAP_SIZE_X; i++){
         for(int j = 0; j < MAP_SIZE_Y; j++){
-            if(distances[i][j] < threshold1){
-                vRobot++;
-            }
-            if(distances[i][j] < threshold2){
-                vRobot++;
-            }
+            if(distances[i][j] != INF&&distances[i][j]!=0)
+            vRobot += 10.0/distances[i][j];
         }
     }
 }
@@ -279,6 +275,8 @@ void robot::initPerFrame(bool have,point p){
     pull = false;
     get = false;
 }
+
+
 
 
 void robot::findBestBox(std::list<box>& boxes, int currentTime,mapinfo &M) {
