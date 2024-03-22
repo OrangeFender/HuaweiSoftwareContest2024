@@ -96,6 +96,7 @@ int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2,int sep
     if (dock_id == -1)
         pos = -1;
 
+
     if(flag==0)
     {        
         if (status == BOAT_MOVING)  //如果移动中，就不需要对船进行操作
@@ -115,6 +116,16 @@ int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2,int sep
             }
             if (pos == 1)  //在港口1进行装货
             {
+
+                if(dock1.transport_time>=(15000-time)-5)  //到最后时间了就直接走
+                {
+                    pos = -1;
+                    setoffTime = time;
+                    operation = BOATGO_VIRTUAL;
+                    return BOATGO_VIRTUAL;
+                }
+
+
                 if(time >= seperate_time)
                     flag = 1;
                 if(goods_num >= capacity)  //货装满了，就去虚拟点
@@ -167,6 +178,17 @@ int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2,int sep
             }
             if (pos == 2)  //在港口2进行装货
             {
+
+                if(dock2.transport_time>=(15000-time)-5)  //到最后时间了就直接走
+                {
+                    pos = -1;
+                    setoffTime = time;
+                    operation = BOATGO_VIRTUAL;
+                    return BOATGO_VIRTUAL;                   
+                }
+
+
+
                 if(goods_num >= capacity)  //货装满了，就去虚拟点
                 {
                     pos = -1;
@@ -236,6 +258,16 @@ int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2,int sep
             }
             if (pos == 1)  //在港口1进行装货
             {
+                if(dock1.transport_time>=(15000-time)-5)  //到最后时间了就直接走
+                {
+                    pos = -1;
+                    setoffTime = time;
+                    operation = BOATGO_VIRTUAL;
+                    return BOATGO_VIRTUAL;                    
+                }
+
+
+
                 if(goods_num >= capacity)  //货装满了，就去虚拟点
                 {
                     pos = -1;
@@ -284,8 +316,20 @@ int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2,int sep
                 }
             }
 
+
             if (pos == 2)  //在港口2进行装货
             {
+                if(dock2.transport_time>=(15000-time)-5)  //到最后时间了就直接走
+                {
+                    pos = -1;
+                    setoffTime = time;
+                    operation = BOATGO_VIRTUAL;
+                    return BOATGO_VIRTUAL;                 
+                }
+
+
+
+
                 if(goods_num >= capacity)  //货装满了，就去虚拟点
                 {
                     pos = -1;
