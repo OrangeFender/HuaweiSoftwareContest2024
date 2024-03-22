@@ -8,14 +8,35 @@
 #include<list>
 
 
-struct boat{
-    int setoffTime;//出发时间，第几帧
-    int arriveTime;//到达时间，第几帧
-    static int capacity;
-    int whichDock;
+// struct boat{
+//     int setoffTime;//出发时间，第几帧
+//     int arriveTime;//到达时间，第几帧
+//     static int capacity;
+//     int whichDock;
     
+//     boat();
+// };
+
+struct boat {
+    int setoffTime;//出发时间，第几帧
+    //int arriveTime;//到达时间，第几帧
+    static int capacity;//船的容量
+    int whichDock1;//虚拟点到dock1  0-9
+    int whichDock2;//dock2到虚拟点
+    int id;//船的标号1-5
+    int pos;//船当前的目的地  1代表去dock1，2代表去dock2，-1代表去泊位
+    int status;//船当前的状态
+    int goods_num;//当前装载的货物量    
+
     boat();
+    boat(int SetTime, int Capacity, int dock1, int dock2, int ID, int Des, int Status, int Goods_num);
+    int cal_arriveTime(dock dock1,dock dock2,int setoffTime, int pos);
+    int boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2);//返回值 0:不操作 1:去港口1 2:去港口2 3:去虚拟点
+    
 };
+
+
+
 
 struct box{
     int value;
