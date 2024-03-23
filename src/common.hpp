@@ -24,6 +24,7 @@ enum Direction {
 
 Direction rotateLeft(Direction direction);
 Direction rotateRight(Direction direction);
+Direction opposite(Direction direction);
 
 struct point {
     int x;
