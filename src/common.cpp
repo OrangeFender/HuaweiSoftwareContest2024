@@ -28,6 +28,20 @@ Direction rotateRight(Direction direction) {
     return direction;
 }
 
+Direction opposite(Direction direction) {
+    switch (direction) {
+        case RIGHT:
+            return LEFT;
+        case LEFT:
+            return RIGHT;
+        case UP:
+            return DOWN;
+        case DOWN:
+            return UP;
+    }
+    return direction;
+}
+
 
 point::point(int x, int y) : x(x), y(y) {}
 
