@@ -40,6 +40,7 @@ int main(){
         scanf("%d %d %d %d", &x, &y, &s, &v);
         docks[i].position = point(x, y);
         docks[i].transport_time = s;
+        debugFile<<"dock"<<i<<docks[i].transport_time<<" "<<v<<std::endl;
         docks[i].loading_speed = v;
         docks[i].setDistance(M);
         docks[i].calcVRobot();
@@ -52,6 +53,7 @@ int main(){
     }
 
     scanf("%d",&boat::capacity);
+    debugFile<<"capacity"<<boat::capacity<<std::endl;
 
     for(int i = 0; i < NUM_BOATS; i++){
         boats[i]=boat(1,-1,-1,i,-1,BOAT_LOADING,0);
@@ -74,7 +76,10 @@ int main(){
             scanf("%d %d %d", &x, &y, &val);
             box b(point(x, y), val, realframe);
             boxes.push_back(b);//将箱子加入箱子列表
+
         }
+
+        //debugFile<<"frame"<<frame<<"K"<<K<<std::endl;
         for(int i = 0; i < NUM_ROBOTS; i++){
             //debugFile<<"id"<<i<<std::endl;
             int have, x, y, sts;
@@ -97,20 +102,22 @@ int main(){
                 // }
             }
 
-            if(frame==25){
-                if(robots[i].status==RETURN&&robots[i].haveBox==false){
-                    robots[i].status==PENDING;
-                }
-            }
+            // if(realframe==45){
+            //     if(robots[i].status==RETURN&&robots[i].haveBox==false){
+            //         robots[i].status==PENDING;
+            //     }
+            // }
 
-            if(realframe==10000){
+            if(frame==10000){
                 if(robots[i].targetDock!=NULL){
+                    debugFile<<"id"<<i<<"frienddock"<<robots[i].targetDock->friendDock<<std::endl;
                     if(robots[i].targetDock->friendDock!=NULL){
                         robots[i].targetDock=robots[i].targetDock->friendDock;
                         robots[i].status=RETURN;
+                        debugFile<<"id"<<i<<"changed"<<std::endl;
                     }
-                
                 }
+
             }
 
         }
@@ -157,14 +164,18 @@ int main(){
             for(int i = 0; i < NUM_ROBOTS; i++){
                 if(robots[i].targetDock==NULL)continue;
                 if(robots[i].Collision(robots, NUM_ROBOTS, Vec))flag = true;
+                if(robots[i].narrowCollision(robots[i].position.moveOneStep(robots[i].next), opposite(robots[i].next), robots, NUM_ROBOTS,M)){
+                    Vec[i] = true;
+                    flag = true;
+                }
             }
             for(int i = 0; i < NUM_ROBOTS; i++){
                 if(robots[i].targetDock==NULL)continue;
                 if(Vec[i]){
-                    debugFile<<"id"<<i<<" x:"<<robots[i].position.x<<" y:"<<robots[i].position.y<<std::endl;
-                    debugFile<<"dir"<<robots[i].next<<std::endl;
+                    //debugFile<<"id"<<i<<" x:"<<robots[i].position.x<<" y:"<<robots[i].position.y<<std::endl;
+                    //debugFile<<"dir"<<robots[i].next<<std::endl;
                     robots[i].RandomMove(M);
-                    debugFile<<"dirafterRandom"<<robots[i].next<<std::endl;
+                    //debugFile<<"Frame"<<realframe<<"dirafterRandom"<<robots[i].next<<std::endl;
                 }
             }
         }while (flag);
@@ -203,7 +214,7 @@ int main(){
         fflush(stdout);
 
         int sum=0;
-        if (realframe==14999){
+        if (realframe==14980){
             for(int i =0;i<NUM_DOCKS;i++){
                 sum+=docks[i].value_summary;
                 debugFile<<"time"<<frame<<std::endl;
