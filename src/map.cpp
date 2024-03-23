@@ -71,3 +71,15 @@ void mapinfo::setBots(robot* bots){
     }
 }
 */
+int mapinfo::degree(point p){
+    int count = 0;
+    Direction directions[] = {UP, DOWN, LEFT, RIGHT};
+    for (int i = 0; i < 4; i++) {
+        Direction dir = directions[i];
+        point nextPoint = p.moveOneStep(dir);
+        if(nextPoint.valid() && nextPoint.getMapValue(clearing)){
+            count++;
+        }
+    }
+    return count;
+}
