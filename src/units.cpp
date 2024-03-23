@@ -25,15 +25,32 @@ bool compareT(const dock& a, const dock& b)
 void boat_bind_dock(boat* boat_arr, dock* dock_arr)
 {
 
-    std::vector<dock> dock_vector(dock_arr, dock_arr + NUM_DOCKS);
-    sort(dock_vector.begin(), dock_vector.end(), compareT); // 降序排序
-
-    for (int i = 0; i < NUM_BOATS; i++)
-    {
-        boat_arr[i].whichDock1 = dock_vector[NUM_DOCKS - 1 - i].id;//空旷度最小
-        boat_arr[i].whichDock2 = dock_vector[i].id;
-        dock_arr[dock_vector[NUM_DOCKS - 1 - i].id].friendDock = &dock_arr[dock_vector[i].id];
+    dock* dock1;
+    dock* dock2;
+    int bestdis = 0;
+    for(int i =0;i<NUM_DOCKS;i++){
+        for(int j = 0;j<NUM_DOCKS;j++){
+            if(i==j||i>=j||(dock1->isBind)||(dock2->isBind))continue;
+            dock1 = &dock_arr[i];
+            dock2 = &dock_arr[j];
+            int dis=dock1->position.getMapValue(dock2->distances);
+            if(dis<bestdis){
+                bestdis = dis;
+            }
+        }
     }
+
+
+
+    // std::vector<dock> dock_vector(dock_arr, dock_arr + NUM_DOCKS);
+    // std::sort(dock_vector.begin(), dock_vector.end(), compareT); // 降序排序
+
+    // for (int i = 0; i < NUM_BOATS; i++)
+    // {
+    //     boat_arr[i].whichDock1 = dock_vector[NUM_DOCKS - 1 - i].id;//空旷度最小
+    //     boat_arr[i].whichDock2 = dock_vector[i].id;
+    //     dock_arr[dock_vector[NUM_DOCKS - 1 - i].id].friendDock = &dock_arr[dock_vector[i].id];
+    // }
 }
 
 //int boat::capacity = 0;
@@ -122,7 +139,7 @@ int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2)
     if(time>=seperateTime)  //超过seperateTime 而且在港口1装货，设置flag为1
         if(status == BOAT_LOADING && pos == 1)
         {
-            flag == 1;
+            flag = 1;
         }
 
 
@@ -282,10 +299,10 @@ int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2)
             if (pos == -1)  //目标港口为-1，代表运输完成，那么返回港口2
             {
                 goods_num = 0;
-                pos = 1;
+                pos = 2;
                 setoffTime = time;
-                operation = BOATGO_DOCK1;
-                return BOATGO_DOCK1;
+                operation = BOATGO_DOCK2;
+                return BOATGO_DOCK2;
             }
 
             if (pos == 1)  //在港口1进行装货
@@ -629,6 +646,7 @@ dock::dock(){
             distances[i][j] = INF;
         }
     }
+    isBind = false;
 }
 
 
