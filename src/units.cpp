@@ -46,6 +46,8 @@ boat::boat() {
     status = 1;
     goods_num = 0;
     operation = 0;
+    seperateTime = 15000;
+    lastTime = 15000;
     flag = 0;
 }
 
@@ -59,6 +61,9 @@ boat::boat(int SetTime, int dock1, int dock2, int ID, int Des, int Status, int G
     status = Status;
     goods_num = Goods_num;
     operation = 0;
+    seperateTime = 0;
+    seperateTime = 15000;
+    lastTime = 15000;
     flag = 0;
 }
 
@@ -85,7 +90,21 @@ int boat::cal_arriveTime(dock dock1,dock dock2, int setoffTime, int pos)
     return arriveTime;
 }
 
-int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2,int seperate_time)
+int boat::cal_seperateTime(dock dock1,dock dock2)//dock1运输时间长，dock2运输时间短
+{
+    int spend_time = 500 + loadingTime + dock2.transport_time + dock1.transport_time + 500 + loadingTime + 500 + loadingTime + dock2.transport_time + kazhenTime;
+    seperateTime = 15000 - spend_time;
+    return seperateTime;
+}
+
+int boat::cal_lastTime(dock dock1,dock dock2)//dock1运输时间长，dock2运输时间短
+{
+    int spend_time = dock2.transport_time + kazhenTime;
+    lastTime = 15000 - spend_time;
+    return lastTime; 
+}
+
+int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2)
 {
     //由于一艘船对应两个港口，所以不会出现在泊位外等待的情况，不用考虑boat_arr[i].status == 2的情况
 
@@ -98,8 +117,17 @@ int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2,int sep
         pos = -1;
 
 
-    if(flag==0)
-    {        
+    //if(flag==0)
+    //{     }   
+    if(time>=seperateTime)  //超过seperateTime 而且在港口1装货，设置flag为1
+        if(status == BOAT_LOADING && pos == 1)
+        {
+            flag == 1;
+        }
+
+
+    if(flag == 0)
+    {
         if (status == BOAT_MOVING)  //如果移动中，就不需要对船进行操作
         {
             operation = BOAT_NONE;
@@ -118,17 +146,17 @@ int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2,int sep
             if (pos == 1)  //在港口1进行装货
             {
 
-                if(dock1.transport_time>=(15000-time)-50)  //到最后时间了就直接走
-                {
-                    pos = -1;
-                    setoffTime = time;
-                    operation = BOATGO_VIRTUAL;
-                    return BOATGO_VIRTUAL;
-                }
+                // if(dock1.transport_time>=(15000-time)-5)  //到最后时间了就直接走
+                // {
+                //     pos = -1;
+                //     setoffTime = time;
+                //     operation = BOATGO_VIRTUAL;
+                //     return BOATGO_VIRTUAL;
+                // }
 
 
-                if(time >= seperate_time)
-                    flag = 1;
+                // if(time >= seperate_time)
+                //     flag = 1;
                 if(goods_num >= capacity)  //货装满了，就去虚拟点
                 {
                     pos = -1;
@@ -180,13 +208,13 @@ int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2,int sep
             if (pos == 2)  //在港口2进行装货
             {
 
-                if(dock2.transport_time>=(15000-time)-50)  //到最后时间了就直接走
-                {
-                    pos = -1;
-                    setoffTime = time;
-                    operation = BOATGO_VIRTUAL;
-                    return BOATGO_VIRTUAL;                   
-                }
+                // if(dock2.transport_time>=(15000-time)-5)  //到最后时间了就直接走
+                // {
+                //     pos = -1;
+                //     setoffTime = time;
+                //     operation = BOATGO_VIRTUAL;
+                //     return BOATGO_VIRTUAL;                   
+                // }
 
 
 
@@ -240,35 +268,40 @@ int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2,int sep
         }
     }
 
-    if(flag==1)
+
+    if(flag == 1)
     {
         if (status == BOAT_MOVING)  //如果移动中，就不需要对船进行操作
         {
             operation = BOAT_NONE;
             return BOAT_NONE;
         }
+
         if (status == BOAT_LOADING)  //如果正常运行状态
         {
             if (pos == -1)  //目标港口为-1，代表运输完成，那么返回港口2
             {
                 goods_num = 0;
-                pos = 2;
+                pos = 1;
                 setoffTime = time;
-                operation = BOATGO_DOCK2;
-                return BOATGO_DOCK2;
+                operation = BOATGO_DOCK1;
+                return BOATGO_DOCK1;
             }
+
             if (pos == 1)  //在港口1进行装货
             {
-                if(dock1.transport_time>=(15000-time)-50)  //到最后时间了就直接走
-                {
-                    pos = -1;
-                    setoffTime = time;
-                    operation = BOATGO_VIRTUAL;
-                    return BOATGO_VIRTUAL;                    
-                }
+
+                // if(dock1.transport_time>=(15000-time)-5)  //到最后时间了就直接走
+                // {
+                //     pos = -1;
+                //     setoffTime = time;
+                //     operation = BOATGO_VIRTUAL;
+                //     return BOATGO_VIRTUAL;
+                // }
 
 
-
+                // if(time >= seperate_time)
+                //     flag = 1;
                 if(goods_num >= capacity)  //货装满了，就去虚拟点
                 {
                     pos = -1;
@@ -315,75 +348,274 @@ int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2,int sep
                     operation = BOAT_NONE;
                     return BOAT_NONE;
                 }
+
             }
 
 
             if (pos == 2)  //在港口2进行装货
             {
-                if(dock2.transport_time>=(15000-time)-50)  //到最后时间了就直接走
+                if(time>=lastTime)  //到最后时间了就直接走
                 {
                     pos = -1;
                     setoffTime = time;
                     operation = BOATGO_VIRTUAL;
-                    return BOATGO_VIRTUAL;                 
+                    return BOATGO_VIRTUAL;  
                 }
 
-
-
-
-                if(goods_num >= capacity)  //货装满了，就去虚拟点
+                if(time < lastTime)  //没到最后时间
                 {
-                    pos = -1;
-                    setoffTime = time;
-                    operation = BOATGO_VIRTUAL;
-                    return BOATGO_VIRTUAL;
-                }
-                if (dock2.counter == 0)  //港口2货装完了，就去虚拟点
-                {
-                    pos = -1;
-                    setoffTime = time;
-                    operation = BOATGO_VIRTUAL;
-                    return BOATGO_VIRTUAL;
-                }
-                if (dock2.counter >= dock2.loading_speed)  //有货继续装
-                {
-                    goods_num += dock2.loading_speed;
-                    dock2.counter -= dock2.loading_speed;
-                    if(goods_num > capacity)//装满了，剩余的货物放回去，去虚拟点
+                    if(goods_num >= capacity)  //货装满了，就去虚拟点
                     {
-                        dock2.counter += goods_num - capacity;
-                        goods_num = capacity;
                         pos = -1;
                         setoffTime = time;
                         operation = BOATGO_VIRTUAL;
                         return BOATGO_VIRTUAL;
                     }
-                    operation = BOAT_NONE;
-                    return BOAT_NONE;
-                }
-                if (dock2.counter < dock2.loading_speed && dock2.counter>0)
-                {
-                    goods_num += dock2.counter;
-                    dock2.counter -= dock2.counter;
-                    if(goods_num > capacity)//装满了，剩余的货物放回去，去虚拟点
+                    else  //货没装满就继续装
                     {
-                        dock2.counter += goods_num - capacity;
-                        goods_num = capacity;
-                        pos = -1;
-                        setoffTime = time;
-                        operation = BOATGO_VIRTUAL;
-                        return BOATGO_VIRTUAL;
+                        if (dock2.counter >= dock2.loading_speed)  //货量大于装载速度
+                        {
+                            goods_num += dock2.loading_speed;
+                            dock2.counter -= dock2.loading_speed;
+                            if(goods_num > capacity)//装满了，剩余的货物放回去，去虚拟点
+                            {
+                                dock2.counter += goods_num - capacity;
+                                goods_num = capacity;
+                                pos = -1;
+                                setoffTime = time;
+                                operation = BOATGO_VIRTUAL;
+                                return BOATGO_VIRTUAL;
+                            }
+                            operation = BOAT_NONE;
+                            return BOAT_NONE;
+                        }
+                        if (dock2.counter < dock2.loading_speed)  //货量小于装载速度（货量可能为0）
+                        {
+                            goods_num += dock2.counter;
+                            dock2.counter -= dock2.counter;
+                            if(goods_num > capacity)//装满了，剩余的货物放回去，去虚拟点
+                            {
+                                dock2.counter += goods_num - capacity;
+                                goods_num = capacity;
+                                pos = -1;
+                                setoffTime = time;
+                                operation = BOATGO_VIRTUAL;
+                                return BOATGO_VIRTUAL;
+                            }
+                            operation = BOAT_NONE;
+                            return BOAT_NONE;
+                        }
                     }
-                    operation = BOAT_NONE;
-                    return BOAT_NONE;
+
+
                 }
+
+                // if(dock2.transport_time>=(15000-time)-5)  //到最后时间了就直接走
+                // {
+                //     pos = -1;
+                //     setoffTime = time;
+                //     operation = BOATGO_VIRTUAL;
+                //     return BOATGO_VIRTUAL;                   
+                // }
+
+
+
+                // if(goods_num >= capacity)  //货装满了，就去虚拟点
+                // {
+                //     pos = -1;
+                //     setoffTime = time;
+                //     operation = BOATGO_VIRTUAL;
+                //     return BOATGO_VIRTUAL;
+                // }
+                // if (dock2.counter == 0)  //港口2货装完了，就去虚拟点
+                // {
+                //     pos = -1;
+                //     setoffTime = time;
+                //     operation = BOATGO_VIRTUAL;
+                //     return BOATGO_VIRTUAL;
+                // }
+                // if (dock2.counter >= dock2.loading_speed)  //有货继续装
+                // {
+                //     goods_num += dock2.loading_speed;
+                //     dock2.counter -= dock2.loading_speed;
+                //     if(goods_num > capacity)//装满了，剩余的货物放回去，去虚拟点
+                //     {
+                //         dock2.counter += goods_num - capacity;
+                //         goods_num = capacity;
+                //         pos = -1;
+                //         setoffTime = time;
+                //         operation = BOATGO_VIRTUAL;
+                //         return BOATGO_VIRTUAL;
+                //     }
+                //     operation = BOAT_NONE;
+                //     return BOAT_NONE;
+                // }
+                // if (dock2.counter < dock2.loading_speed && dock2.counter>0)
+                // {
+                //     goods_num += dock2.counter;
+                //     dock2.counter -= dock2.counter;
+                //     if(goods_num > capacity)//装满了，剩余的货物放回去，去虚拟点
+                //     {
+                //         dock2.counter += goods_num - capacity;
+                //         goods_num = capacity;
+                //         pos = -1;
+                //         setoffTime = time;
+                //         operation = BOATGO_VIRTUAL;
+                //         return BOATGO_VIRTUAL;
+                //     }
+                //     operation = BOAT_NONE;
+                //     return BOAT_NONE;
+                // }
             }
         }
-
     }
+
+    // if(flag==1)
+    // {
+    //     if (status == BOAT_MOVING)  //如果移动中，就不需要对船进行操作
+    //     {
+    //         operation = BOAT_NONE;
+    //         return BOAT_NONE;
+    //     }
+    //     if (status == BOAT_LOADING)  //如果正常运行状态
+    //     {
+    //         if (pos == -1)  //目标港口为-1，代表运输完成，那么返回港口2
+    //         {
+    //             goods_num = 0;
+    //             pos = 2;
+    //             setoffTime = time;
+    //             operation = BOATGO_DOCK2;
+    //             return BOATGO_DOCK2;
+    //         }
+    //         if (pos == 1)  //在港口1进行装货
+    //         {
+    //             if(dock1.transport_time>=(15000-time)-5)  //到最后时间了就直接走
+    //             {
+    //                 pos = -1;
+    //                 setoffTime = time;
+    //                 operation = BOATGO_VIRTUAL;
+    //                 return BOATGO_VIRTUAL;                    
+    //             }
+
+
+
+    //             if(goods_num >= capacity)  //货装满了，就去虚拟点
+    //             {
+    //                 pos = -1;
+    //                 setoffTime = time;
+    //                 operation = BOATGO_VIRTUAL;
+    //                 return BOATGO_VIRTUAL;
+    //             }
+    //             if (dock1.counter == 0)  //港口1货装完了，就去港口2
+    //             {
+    //                 pos = 2;
+    //                 setoffTime = time;
+    //                 operation = BOATGO_DOCK2;
+    //                 return BOATGO_DOCK2;
+    //             }
+    //             if (dock1.counter >= dock1.loading_speed)  //有货继续装
+    //             {
+    //                 goods_num += dock1.loading_speed;
+    //                 dock1.counter-= dock1.loading_speed;
+    //                 if(goods_num > capacity)//装满了，剩余的货物放回去，去虚拟点
+    //                 {
+    //                     dock1.counter += goods_num - capacity;
+    //                     goods_num = capacity;
+    //                     pos = -1;
+    //                     setoffTime = time;
+    //                     operation = BOATGO_VIRTUAL;
+    //                     return BOATGO_VIRTUAL;
+    //                 }
+    //                 operation = BOAT_NONE;
+    //                 return BOAT_NONE;
+    //             }
+    //             if (dock1.counter < dock1.loading_speed && dock1.counter>0)
+    //             {
+    //                 goods_num += dock1.counter;
+    //                 dock1.counter -= dock1.counter;
+    //                 if(goods_num > capacity)//装满了，剩余的货物放回去，去虚拟点
+    //                 {
+    //                     dock1.counter += goods_num - capacity;
+    //                     goods_num = capacity;
+    //                     pos = -1;
+    //                     setoffTime = time;
+    //                     operation = BOATGO_VIRTUAL;
+    //                     return BOATGO_VIRTUAL;
+    //                 }
+    //                 operation = BOAT_NONE;
+    //                 return BOAT_NONE;
+    //             }
+    //         }
+
+
+    //         if (pos == 2)  //在港口2进行装货
+    //         {
+    //             if(dock2.transport_time>=(15000-time)-5)  //到最后时间了就直接走
+    //             {
+    //                 pos = -1;
+    //                 setoffTime = time;
+    //                 operation = BOATGO_VIRTUAL;
+    //                 return BOATGO_VIRTUAL;                 
+    //             }
+
+
+
+
+    //             if(goods_num >= capacity)  //货装满了，就去虚拟点
+    //             {
+    //                 pos = -1;
+    //                 setoffTime = time;
+    //                 operation = BOATGO_VIRTUAL;
+    //                 return BOATGO_VIRTUAL;
+    //             }
+    //             if (dock2.counter == 0)  //港口2货装完了，就去虚拟点
+    //             {
+    //                 pos = -1;
+    //                 setoffTime = time;
+    //                 operation = BOATGO_VIRTUAL;
+    //                 return BOATGO_VIRTUAL;
+    //             }
+    //             if (dock2.counter >= dock2.loading_speed)  //有货继续装
+    //             {
+    //                 goods_num += dock2.loading_speed;
+    //                 dock2.counter -= dock2.loading_speed;
+    //                 if(goods_num > capacity)//装满了，剩余的货物放回去，去虚拟点
+    //                 {
+    //                     dock2.counter += goods_num - capacity;
+    //                     goods_num = capacity;
+    //                     pos = -1;
+    //                     setoffTime = time;
+    //                     operation = BOATGO_VIRTUAL;
+    //                     return BOATGO_VIRTUAL;
+    //                 }
+    //                 operation = BOAT_NONE;
+    //                 return BOAT_NONE;
+    //             }
+    //             if (dock2.counter < dock2.loading_speed && dock2.counter>0)
+    //             {
+    //                 goods_num += dock2.counter;
+    //                 dock2.counter -= dock2.counter;
+    //                 if(goods_num > capacity)//装满了，剩余的货物放回去，去虚拟点
+    //                 {
+    //                     dock2.counter += goods_num - capacity;
+    //                     goods_num = capacity;
+    //                     pos = -1;
+    //                     setoffTime = time;
+    //                     operation = BOATGO_VIRTUAL;
+    //                     return BOATGO_VIRTUAL;
+    //                 }
+    //                 operation = BOAT_NONE;
+    //                 return BOAT_NONE;
+    //             }
+    //         }
+    //     }
+
+    // }
 
     return BOAT_NONE;
 }
+
+
 
 
 dock::dock(){
