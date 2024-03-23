@@ -141,7 +141,7 @@ int main(){
             }
             if(robots[i].status == PENDING){
                 //debugFile<<"boxsize"<<boxes.size()<<std::endl;
-                robots[i].findBestBox(boxes, realframe,M);
+                robots[i].findBestBox(robots,boxes, realframe,M);
             }
             robots[i].greedyGetNext();
             
