@@ -32,7 +32,7 @@ void boat_bind_dock(boat* boat_arr, dock* dock_arr)
     {
         boat_arr[i].whichDock1 = dock_vector[NUM_DOCKS - 1 - i].id;//空旷度最小
         boat_arr[i].whichDock2 = dock_vector[i].id;
-        dock_vector[NUM_DOCKS - 1 - i].friendDock = &dock_vector[i];
+        dock_arr[dock_vector[NUM_DOCKS - 1 - i].id].friendDock = &dock_arr[dock_vector[i].id];
     }
 }
 
@@ -118,7 +118,7 @@ int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2,int sep
             if (pos == 1)  //在港口1进行装货
             {
 
-                if(dock1.transport_time>=(15000-time)-5)  //到最后时间了就直接走
+                if(dock1.transport_time>=(15000-time)-50)  //到最后时间了就直接走
                 {
                     pos = -1;
                     setoffTime = time;
@@ -180,7 +180,7 @@ int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2,int sep
             if (pos == 2)  //在港口2进行装货
             {
 
-                if(dock2.transport_time>=(15000-time)-5)  //到最后时间了就直接走
+                if(dock2.transport_time>=(15000-time)-50)  //到最后时间了就直接走
                 {
                     pos = -1;
                     setoffTime = time;
@@ -259,7 +259,7 @@ int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2,int sep
             }
             if (pos == 1)  //在港口1进行装货
             {
-                if(dock1.transport_time>=(15000-time)-5)  //到最后时间了就直接走
+                if(dock1.transport_time>=(15000-time)-50)  //到最后时间了就直接走
                 {
                     pos = -1;
                     setoffTime = time;
@@ -320,7 +320,7 @@ int boat::boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2,int sep
 
             if (pos == 2)  //在港口2进行装货
             {
-                if(dock2.transport_time>=(15000-time)-5)  //到最后时间了就直接走
+                if(dock2.transport_time>=(15000-time)-50)  //到最后时间了就直接走
                 {
                     pos = -1;
                     setoffTime = time;
@@ -449,6 +449,101 @@ void robot::initPerFrame(bool have,point p){
     modified = 0;
     pull = false;
     get = false;
+    for(int i = 0; i < 5; i++){
+        blacklisted[i] = false;
+    }
+}
+void robot::findBestBox(robot others[],std::list<box>& boxes, int currentTime,mapinfo &M) {
+    if(haveBox){
+        return;
+    }
+    box bestBox;
+    int bestValue = 0;
+    auto bestIt = boxes.end();
+    bool flag = false;
+    bool flag_give = false;
+    if(boxes.empty()){
+        status = PENDING;
+        haveBox = false;
+        return;
+    }
+
+    flagggg:
+    for(float iii=1;iii<5;iii=iii+0.1){
+        bestIt = boxes.end();
+        bestValue = 0;
+        flag = false;
+        if(iii>1.5)
+        {
+            iii=iii+0.1;
+        }
+
+
+        for (auto it = boxes.begin(); it != boxes.end(); ) 
+        {
+            if (currentTime - it->bornTime > BOX_LIFE) {//如果箱子已经存在超过一定时间
+                // if (it == bestIt) {
+                //     bestIt = boxes.end();
+                // }
+                it = boxes.erase(it);
+            } else {
+            
+                flag_give=false;
+
+                //int value = (it->value)* 64 / ((it->position.getMapValue(targetDock->distances)+position.getMapValue(it->box_distances)+position.getMapValue(targetDock->distances)+bias)); // 价值/距离
+                int value = (it->value)* 64 / ((it->position.getMapValue(targetDock->distances)+bias)); // 价值/距离
+                if (value > bestValue) 
+                {
+                    for (int i = 0; i < 10; i++) 
+                    {
+                        robot& other = others[i];
+                        if(other.targetDock==NULL)continue;
+                        int value_other=(it->value)* 64 / ((it->position.getMapValue(other.targetDock->distances)+bias));
+                        if(value_other>value*iii){
+                            flag_give=true;
+                            break;
+                        }
+                    }
+
+                    if (!flag_give)
+                    {
+                        bestValue = value;
+                        bestBox = *it;
+                        bestIt = it;
+                        flag = true;                   
+                    }
+                }
+                ++it;
+            }
+        }
+        if(flag){
+            break;
+        }
+    }
+    if(currentTime - bestIt->bornTime > BOX_LIFE-bestIt->position.getMapValue(targetDock->distances))
+    {
+        bestIt = boxes.erase(bestIt);
+        goto flagggg;
+
+    }
+
+    if (flag) {
+
+        boxes.erase(bestIt);
+        targetBox = bestBox;
+
+
+        for(int i = 0; i < MAP_SIZE_X; i++){
+            for(int j = 0; j < MAP_SIZE_Y; j++){
+                boxBFS[i][j] = INF;
+            }
+        }
+        M.bfs(bestBox.position, boxBFS);
+        status = FETCH;
+    }
+    else{
+        
+    }    
 }
 
 
@@ -678,9 +773,13 @@ void robot::RandomMove(mapinfo M){
     Direction trys[4] = {UP, LEFT, DOWN, RIGHT};
     while (true)
     {
-        Direction Next = trys[rand()%4];
+        int random = rand();
+        
+        Direction Next = trys[random%4];
+        if(blacklisted[Next]&&((random%100)<90))continue;//如果这个方向被列入黑名单，那么90%的概率不会选择
         if(position.moveOneStep(Next).valid()&&position.moveOneStep(Next).getMapValue(M.clearing)){
             next = Next;
+            blacklisted[Next] = true;
             break;
         }
     }
@@ -704,4 +803,28 @@ void robot::findBestDock(dock docks[], int size){
     targetDock = bestDock;
     if(targetDock != nullptr)
         bestDock->RobotID = id;
+}
+
+bool robot::narrowCollision(point p,Direction from,robot others[], int size,mapinfo M){
+    int deg=M.degree(p);
+    if(deg > 2)return false;//如果度数大于2，那么不是窄路
+    for(int i = 0; i < size; i++){
+        robot& other = others[i];
+        if(p== other.position){
+            return true;
+        }
+        if(p== other.position.moveOneStep(other.next)&&other.id<id){
+            return true;
+        }
+    }
+    if(deg==2){
+        Direction trys[4] = {UP, LEFT, DOWN, RIGHT};
+        for(int i = 0; i < 4; i++){
+            if(trys[i] == from)continue;//不走回头路
+            if(p.moveOneStep(trys[i]).valid()&&p.moveOneStep(trys[i]).getMapValue(M.clearing)){
+                return robot::narrowCollision(p.moveOneStep(trys[i]), opposite(trys[i]), others, size, M);
+            }
+        }
+    }
+    return false;
 }
