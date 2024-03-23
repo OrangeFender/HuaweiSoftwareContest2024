@@ -60,6 +60,9 @@ int main(){
     }
 
     boat_bind_dock(boats, docks);
+    for(int i = 0; i < NUM_BOATS; i++){
+        debugFile<<"boat"<<i<<"dock1 "<<boats[i].whichDock1<<"dock2 "<<boats[i].whichDock2<<std::endl;
+    }
 
     scanf("%s", okk);
     printf("OK\n");
@@ -108,25 +111,41 @@ int main(){
             //     }
             // }
 
-            if(frame==10000){
-                if(robots[i].targetDock!=NULL){
-                    debugFile<<"id"<<i<<"frienddock"<<robots[i].targetDock->friendDock<<std::endl;
-                    if(robots[i].targetDock->friendDock!=NULL){
-                        robots[i].targetDock=robots[i].targetDock->friendDock;
-                        robots[i].status=RETURN;
-                        debugFile<<"id"<<i<<"changed"<<std::endl;
-                    }
-                }
+            // if(frame==10000){
+            //     if(robots[i].targetDock!=NULL){
+            //         debugFile<<"id"<<i<<"frienddock"<<robots[i].targetDock->friendDock<<std::endl;
+            //         if(robots[i].targetDock->friendDock!=NULL){
+            //             robots[i].targetDock=robots[i].targetDock->friendDock;
+            //             robots[i].status=RETURN;
+            //             debugFile<<"id"<<i<<"changed"<<std::endl;
+            //         }
+            //     }
 
-            }
+            // }
+
 
         }
         for(int i = 0; i < NUM_BOATS; i++){
+            if(boats[i].flag){
+                int ind=docks[boats[i].whichDock1].RobotID;
+                if(robots[ind].changed==false){
+                    robots[ind].targetDock=robots[ind].targetDock->friendDock;
+                    robots[ind].status=RETURN;
+                    robots[ind].changed=true;
+                    debugFile<<"id"<<ind<<"changed"<<std::endl;
+                }
+                
+            }
+
+
+
             int sts, pos;
             scanf("%d %d\n", &sts, &pos);
             if(realframe>14500){
                 debugFile<<"frame"<<realframe<<"boat"<<i<<"sts"<<sts<<"pos"<<pos<<std::endl;
             }
+            boats[i].cal_lastTime(docks[boats[i].whichDock1], docks[boats[i].whichDock2]);
+            boats[i].cal_seperateTime(docks[boats[i].whichDock1], docks[boats[i].whichDock2]);
             boats[i].boat_ope(sts, pos, realframe, docks[boats[i].whichDock1], docks[boats[i].whichDock2]);//返回值 0:不操作 1:去港口1 2:去港口2 3:去虚拟点
         }
         scanf("%s", okk);
