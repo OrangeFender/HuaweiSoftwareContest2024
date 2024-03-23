@@ -107,6 +107,7 @@ struct robot{
     int modified;//是否被修改过
     bool haveBox;//是否有箱子
     bool blacklisted[5];//是否被列入黑名单
+    bool changed;//是否被改变过
     robot();
     robot(point p,int id);
     void initPerFrame(bool have,point p);
