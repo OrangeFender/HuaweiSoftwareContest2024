@@ -99,6 +99,7 @@ struct robot{
     bool get;//拿箱子
     int modified;//是否被修改过
     bool haveBox;//是否有箱子
+    bool blacklisted[5];//是否被列入黑名单
     robot();
     robot(point p,int id);
     void initPerFrame(bool have,point p);
@@ -107,9 +108,11 @@ struct robot{
     bool getBox();//拿箱子
     void Reset();//以防箱子丢失
     void findBestBox(std::list<box>& boxes, int currentTime,mapinfo &M);
+    void findBestBox(robot others[],std::list<box>& boxes, int currentTime,mapinfo &M);
     void findCollision(robot others[], int size);//
     void handleCollision(robot& other, int flag);
     bool Collision(robot others[], int size,bool vec[NUM_ROBOTS]);//判断是否会发生碰撞
+    bool narrowCollision(point p,Direction from,robot others[], int size,mapinfo M);//判断是否会发生碰撞
     void RandomMove(mapinfo);//随机移动
     void findBestDock(dock docks[], int size);//初始阶段，找到最优的码头
 };
