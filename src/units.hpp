@@ -19,8 +19,8 @@
 #define BOAT_MOVING 0
 #define BOAT_LOADING 1
 
-#define loadingTime 55
-#define kazhenTime 10
+#define loadingTime 10
+#define kazhenTime 5
 
 // struct boat{
 //     int setoffTime;//出发时间，第几帧
