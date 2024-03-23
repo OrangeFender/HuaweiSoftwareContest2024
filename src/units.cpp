@@ -27,18 +27,44 @@ void boat_bind_dock(boat* boat_arr, dock* dock_arr)
 
     dock* dock1;
     dock* dock2;
-    int bestdis = 0;
-    for(int i =0;i<NUM_DOCKS;i++){
-        for(int j = 0;j<NUM_DOCKS;j++){
-            if(i==j||i>=j||(dock1->isBind)||(dock2->isBind))continue;
-            dock1 = &dock_arr[i];
-            dock2 = &dock_arr[j];
-            int dis=dock1->position.getMapValue(dock2->distances);
-            if(dis<bestdis){
-                bestdis = dis;
+    dock* bestdock1;
+    dock* bestdock2;
+    int bestdis;
+    for(int k =0 ;k<NUM_BOATS;k++){
+        bestdis = INF;
+        for(int i =0;i<NUM_DOCKS;i++){
+            for(int j = 0;j<NUM_DOCKS;j++){
+                dock1 = &dock_arr[i];
+                dock2 = &dock_arr[j];
+                if(i==j||i>=j||(dock1->isBind)||(dock2->isBind))continue;
+                int dis=dock1->position.getMapValue(dock2->distances);
+                if(dis<=bestdis){
+                    bestdis = dis;
+                    bestdock1 = dock1;
+                    bestdock2 = dock2;
+                }
             }
         }
+        if(dock1->transport_time<dock2->transport_time)
+        {
+            boat_arr[k].whichDock1 = bestdock2->id;
+            boat_arr[k].whichDock2 = bestdock1->id;
+            bestdock1->isBind = true;
+            bestdock2->isBind = true;
+            bestdock2->friendDock = bestdock1;
+        }
+        else
+        {
+            boat_arr[k].whichDock1 = bestdock1->id;
+            boat_arr[k].whichDock2 = bestdock2->id;
+            bestdock1->isBind = true;
+            bestdock2->isBind = true;
+            bestdock1->friendDock = bestdock2;
+        }
+        
     }
+    
+
 
 
 
