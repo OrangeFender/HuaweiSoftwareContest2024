@@ -19,6 +19,8 @@
 #define BOAT_MOVING 0
 #define BOAT_LOADING 1
 
+#define loadingTime 55
+#define kazhenTime 10
 
 // struct boat{
 //     int setoffTime;//出发时间，第几帧
@@ -33,6 +35,8 @@ struct dock;
 
 struct boat {
     int setoffTime;//出发时间，第几帧
+    int seperateTime;
+    int lastTime;
     //int arriveTime;//到达时间，第几帧
     static int capacity;//船的容量
     int whichDock1;//虚拟点到dock1  0-9
@@ -45,8 +49,10 @@ struct boat {
     int flag;//0代表未拾取第二阶段的dock1  1代表已经拾取了dock1
     boat();
     boat(int SetTime, int dock1, int dock2, int ID, int Des, int Status, int Goods_num);
+    int cal_seperateTime(dock dock1,dock dock2);
+    int cal_lastTime(dock dock1,dock dock2);//dock1运输时间长，dock2运输时间短
     int cal_arriveTime(dock dock1,dock dock2,int setoffTime, int pos);
-    int boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2,int seperate_time);//返回值 0:不操作 1:去港口1 2:去港口2 3:去虚拟点
+    int boat_ope(int sta, int dock_id,int time,dock& dock1,dock& dock2);//返回值 0:不操作 1:去港口1 2:去港口2 3:去虚拟点
     
 };
 
@@ -74,6 +80,7 @@ struct dock{
     int counter;//当前物品数量
     int counter_summary;//记录物品总数目
     int value_summary;//记录物品总价值
+    bool isBind;//是否被绑定
     dock* friendDock;//对应的另一个码头
     dock();
     dock(mapinfo& M, point p, int id,int Load);//初始化码头位置和每个点的距离
