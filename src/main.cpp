@@ -40,7 +40,7 @@ int main(){
         scanf("%d %d %d %d", &x, &y, &s, &v);
         docks[i].position = point(x, y);
         docks[i].transport_time = s;
-        debugFile<<"dock"<<i<<docks[i].transport_time<<" "<<v<<std::endl;
+        debugFile<<"dock"<<i<<" "<<"time:"<<docks[i].transport_time<<std::endl;
         docks[i].loading_speed = v;
         docks[i].setDistance(M);
         docks[i].calcVRobot();
@@ -124,7 +124,10 @@ int main(){
         for(int i = 0; i < NUM_BOATS; i++){
             int sts, pos;
             scanf("%d %d\n", &sts, &pos);
-            boats[i].boat_ope(sts, pos, realframe, docks[boats[i].whichDock1], docks[boats[i].whichDock2],10000);//返回值 0:不操作 1:去港口1 2:去港口2 3:去虚拟点
+            if(realframe>14500){
+                debugFile<<"frame"<<realframe<<"boat"<<i<<"sts"<<sts<<"pos"<<pos<<std::endl;
+            }
+            boats[i].boat_ope(sts, pos, realframe, docks[boats[i].whichDock1], docks[boats[i].whichDock2]);//返回值 0:不操作 1:去港口1 2:去港口2 3:去虚拟点
         }
         scanf("%s", okk);
         //处理数据
